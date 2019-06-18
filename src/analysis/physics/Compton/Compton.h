@@ -2,7 +2,7 @@
 // the compiler to read this file only once
 #pragma once
 
-#include "physics.h"
+#include "physics/Physics.h"
 
 // A heirarchy of namespaces which generally resembles the
 // folder heirarchy
@@ -28,12 +28,17 @@ public:
     // being passed as a reference (which means they will be
     // modified by the function.
     virtual void ProcessEvent(const TEvent& event, manager_t& manager) override;
+
+    virtual void ShowResult() override;
+
+
 private:
     // TH1 is a root command for making histograms. The D at the
     // end stands for double and it indicates what the height of
     // the bins will be. h_nClusters is the name of the histogram.
     // You would put all your histograms here.
     TH1D* h_nClusters;
+    TH1D* h_TaggerTime;
 };
 
 }}}

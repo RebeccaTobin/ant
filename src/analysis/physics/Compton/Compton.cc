@@ -32,13 +32,37 @@ Compton::Compton(const string& name, OptionsPtr opts) :
                                     tagger_time_bins, // our binnings
                                     "h_TaggerTime"    // ROOT object name, auto-generated if omitted
                                     );
+
+    h_nClusters = HistFac.makeTH1D("Number of Cluster", "nClusters",
+                                   "#", BinSettings(15,0,15), "h_nClusters");
 }
 
 // ?? Don't know why there's no variable after the manager_t& ??
 // See wiki for more
 void Compton::ProcessEvent(const TEvent& event, manager_t&)
 {
-    // The physics will happen here
+
+    // This line loops over the vector TaggerHits (see long form of code
+    // below) with parameter taggerhit.
+    // for (const auto& taggerhit = event.Reconstructed().TaggerHits.begin();
+    // taggerhit != event.Reconstructed().TaggerHits.end(); ++taggerhit)
+    for (const auto& taggerhit : event.Reconstructed().TaggerHits) {
+
+        h_TaggerTime->Fill(taggerhit.Time);
+    }
+
+    // The number of clusters is independent from the Tagger hits
+    // so this line is outside the for loop
+    h_nClusters->Fill(event.Reconstructed().Clusters.size());
+
+}
+
+void Compton::ShowResult()
+{
+    ant::canvas(GetName()+": Basic plots")
+            << h_TaggerTime
+            << h_nClusters
+            << endc; //actually draws the canvas
 }
 
 // A macro that registers the Compton class with Ant so that
