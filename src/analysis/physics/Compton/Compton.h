@@ -37,8 +37,7 @@ private:
     // end stands for double and it indicates what the height of
     // the bins will be. h_nClusters is the name of the histogram.
     // You would put all your histograms here.
-    TH1D* h_nClusters;
-    TH1D* h_TaggerTime;
+    TH1D* h_TaggerandClusterTime;
 };
 
 }}}
