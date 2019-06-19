@@ -27,27 +27,29 @@ Compton::Compton(const string& name, OptionsPtr opts) :
 
     const BinSettings time_bins(2000, -200, 200);
 
-    //h_TaggerandClusterTime = HistFac.makeTH1D("Subtracted Time",    // title
-    //                                "t [ns]","#",     // xlabel, ylabel
-    //                                time_bins, // our binnings
-    //                                "h_TaggerTime"    // ROOT object name, auto-generated if omitted
-    //                                );
+    h_TaggerClusterSubtaction = HistFac.makeTH1D("Subtracted Time",    // title
+                                    "t [ns]","#",     // xlabel, ylabel
+                                    time_bins, // our binnings
+                                    "h_TaggerClusterSubtaction"    // ROOT object name, auto-generated if omitted
+                                    );
     h_TaggerTime = HistFac.makeTH1D("Tagger Time",    // title
                                     "t [ns]","#",     // xlabel, ylabel
                                     time_bins, // our binnings
                                     "h_TaggerTime"    // ROOT object name, auto-generated if omitted
                                     );
-    // PromptRandom stuff
+    h_PromptRandomWithTriggerSimulation = HistFac.makeTH1D("PromptRandom with TriggerSimulation",    // title
+                                    "t [ns]","#",     // xlabel, ylabel
+                                    time_bins, // our binnings
+                                    "h_PromptRandomWithTriggerSimulation"    // ROOT object name, auto-generated if omitted
+                                    );
+    // Prompt and random windows
     promptrandom.AddPromptRange({ -7,   7}); // in nanoseconds
     promptrandom.AddRandomRange({-50, -10});
     promptrandom.AddRandomRange({ 10,  50});
 }
 
-// ?? Don't know why there's no variable after the manager_t& ??
-// See wiki for more
 void Compton::ProcessEvent(const TEvent& event, manager_t&)
 {
-    // Using corrected tagger time
     triggersimu.ProcessEvent(event);
 
     for (const auto& taggerhit : event.Reconstructed().TaggerHits) {
@@ -62,7 +64,7 @@ void Compton::ProcessEvent(const TEvent& event, manager_t&)
         // is in the prompt or random window. This allows the random
         // hits to automatically to subtracted out.
         const double weight = promptrandom.FillWeight();
-        h_TaggerTime->Fill(taggerhit.Time, weight);
+        h_PromptRandomWithTriggerSimulation->Fill(taggerhit.Time, weight);
     }
 
     // This line loops over all the clusters and taggerhits and
@@ -71,22 +73,26 @@ void Compton::ProcessEvent(const TEvent& event, manager_t&)
     // of taggerhit times and cluster times in which those events
     // could possibly be correlated.
 
-    //for (const auto& clusterhit : event.Reconstructed().Clusters) {
-    //    for (const auto& taggerhit : event.Reconstructed().TaggerHits) {
-    //        h_TaggerandClusterTime->Fill(taggerhit.Time - clusterhit.Time);
+    for (const auto& clusterhit : event.Reconstructed().Clusters) {
+        for (const auto& taggerhit : event.Reconstructed().TaggerHits) {
+            h_TaggerClusterSubtaction->Fill(taggerhit.Time - clusterhit.Time);
+        }
+    }
 
-//        }
-//    }
+    for (const auto& taggerhit : event.Reconstructed().TaggerHits) {
+        h_TaggerTime->Fill(taggerhit.Time);
+    }
 }
 
 void Compton::ShowResult()
 {
-    ant::canvas(GetName()+": Tagger Time with Prompt Random")
-            //<< h_TaggerandClusterTime
+    ant::canvas(GetName()+": Tagger Time Stuff")
+            << h_TaggerClusterSubtaction
             << h_TaggerTime
+            << h_PromptRandomWithTriggerSimulation
             << endc; // actually draws the canvas
 }
 
 // A macro that registers the Compton class with Ant so that
-// you can call your class using "Ant -p Compton"
+// you can call this class using "Ant -p Compton"
 AUTO_REGISTER_PHYSICS(Compton)

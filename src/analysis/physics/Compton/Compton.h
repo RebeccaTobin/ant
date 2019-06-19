@@ -42,6 +42,8 @@ private:
     // You would put all your histograms here.
     //TH1D* h_TaggerandClusterTime;
     TH1D* h_TaggerTime;
+    TH1D* h_TaggerClusterSubtaction;
+    TH1D* h_PromptRandomWithTriggerSimulation;
     PromptRandom::Switch promptrandom;
     utils::TriggerSimulation triggersimu;
 };
