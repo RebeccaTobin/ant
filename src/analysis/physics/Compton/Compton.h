@@ -3,6 +3,9 @@
 #pragma once
 
 #include "physics/Physics.h"
+// To subtact out random tagger hits
+#include "plot/PromptRandomHist.h"
+#include "utils/TriggerSimulation.h"
 
 // A heirarchy of namespaces which generally resembles the
 // folder heirarchy
@@ -37,7 +40,10 @@ private:
     // end stands for double and it indicates what the height of
     // the bins will be. h_nClusters is the name of the histogram.
     // You would put all your histograms here.
-    TH1D* h_TaggerandClusterTime;
+    //TH1D* h_TaggerandClusterTime;
+    TH1D* h_TaggerTime;
+    PromptRandom::Switch promptrandom;
+    utils::TriggerSimulation triggersimu;
 };
 
 }}}
