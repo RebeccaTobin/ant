@@ -70,7 +70,7 @@ void Compton::ProcessEvent(const TEvent& event, manager_t&)
         // Plot taggerhits with weights. Don't know why taggerhit.Time
         // is used rather than CorrectedTaggerTime
         const double weight = promptrandom.FillWeight();
-        h_PromptRandomWithTriggerSimulation->Fill(taggerhit.Time, weight);
+        h_PromptRandomWithTriggerSimulation->Fill(CorrectedTaggerTime, weight);
     }
 }
 
