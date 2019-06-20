@@ -29,9 +29,9 @@ Compton::Compton(const string& name, OptionsPtr opts) :
                                     "h_PromptRandomWithTriggerSimulation"    // ROOT object name, auto-generated if omitted
                                     );
     // Prompt and random windows
-    promptrandom.AddPromptRange({ 9,   19}); // in nanoseconds
-    promptrandom.AddRandomRange({-200, 7});
-    promptrandom.AddRandomRange({ 21,  200});
+    promptrandom.AddPromptRange({ 4,   22}); // in nanoseconds
+    promptrandom.AddRandomRange({-200, 0});
+    promptrandom.AddRandomRange({ 27,  200});
 }
 
 void Compton::ProcessEvent(const TEvent& event, manager_t&)
