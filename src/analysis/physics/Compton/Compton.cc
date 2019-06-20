@@ -44,12 +44,6 @@ void Compton::ProcessEvent(const TEvent& event, manager_t&)
     // does the calculations
     triggersimu.ProcessEvent(event);
 
-    for (const auto& clusterhit : event.Reconstructed().Clusters) {
-        for (const auto& taggerhit : event.Reconstructed().TaggerHits) {
-            h_TaggerCBSubtaction->Fill(taggerhit.Time - clusterhit.Time);
-        }
-    }
-
     for (const auto& taggerhit : event.Reconstructed().TaggerHits) {
         // Pass through corrected tagger time into promptrandom
 
@@ -70,9 +64,16 @@ void Compton::ProcessEvent(const TEvent& event, manager_t&)
         // Plot taggerhits with weights. Don't know why taggerhit.Time
         // is used rather than CorrectedTaggerTime
         const double weight = promptrandom.FillWeight();
-        h_PromptRandomWithTriggerSimulation->Fill(CorrectedTaggerTime, weight);
+        h_PromptRandomWithTriggerSimulation->Fill(taggerhit.Time, weight);
     }
 }
+
+double Compton::MissingMass(const auto& incoming_ph_energy,
+                            const auto& scattered_ph_energy,
+                            const auto& theta) {
+
+}
+
 
 void Compton::ShowResult()
 {

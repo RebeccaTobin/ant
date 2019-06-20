@@ -34,6 +34,8 @@ public:
 
     virtual void ShowResult() override;
 
+    virtual double MissingMass() override;
+
 
 private:
     // TH1 is a root command for making histograms. The D at the
