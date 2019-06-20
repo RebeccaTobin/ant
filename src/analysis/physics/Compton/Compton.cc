@@ -5,37 +5,23 @@ using namespace ant;
 using namespace ant::analysis;
 using namespace ant::analysis::physics;
 
-// Defining the contructor from the Compton class. The base
-// class Physics is included with the same parameters
-// ?? Not too sure about this formatting ??
+// Defining the contructor for the Compton class
 Compton::Compton(const string& name, OptionsPtr opts) :
     Physics(name, opts)
 {
-    // This stuff will happen automatically when an object
-    // in the Compton class is created. "In the constructor
-    // we do not do anything so far, we just pass the name
-    // and the options to the base class to handle some stuff
-    // for us, like setting the name of our class and check
-    // for some options. The way the information is passed
-    // to the base class with calling the constructor after
-    // the colon of our own constructor is called member
-    // initializer list. It's just a faster way of initializing
-    // the base class compared to something like
-    // Tutorial::Turorial(const string& name, OptionsPtr opts) { Physics(name, opts); }
-    // and is used nearly everywhere within Ant.""
-    // ^don't know what that means
+    // Histograms are created here but not filled
 
     const BinSettings time_bins(2000, -200, 200);
 
-    h_TaggerClusterSubtaction = HistFac.makeTH1D("Subtracted Time",    // title
-                                    "t [ns]","#",     // xlabel, ylabel
-                                    time_bins, // our binnings
-                                    "h_TaggerClusterSubtaction"    // ROOT object name, auto-generated if omitted
-                                    );
     h_TaggerTime = HistFac.makeTH1D("Tagger Time",    // title
                                     "t [ns]","#",     // xlabel, ylabel
                                     time_bins, // our binnings
                                     "h_TaggerTime"    // ROOT object name, auto-generated if omitted
+                                    );
+    h_TaggerCBSubtaction = HistFac.makeTH1D("Tagger CB Subtaction",    // title
+                                    "t [ns]","#",     // xlabel, ylabel
+                                    time_bins, // our binnings
+                                    "h_TaggerCBSubtaction"    // ROOT object name, auto-generated if omitted
                                     );
     h_PromptRandomWithTriggerSimulation = HistFac.makeTH1D("PromptRandom with TriggerSimulation",    // title
                                     "t [ns]","#",     // xlabel, ylabel
@@ -43,51 +29,55 @@ Compton::Compton(const string& name, OptionsPtr opts) :
                                     "h_PromptRandomWithTriggerSimulation"    // ROOT object name, auto-generated if omitted
                                     );
     // Prompt and random windows
-    promptrandom.AddPromptRange({ -7,   7}); // in nanoseconds
-    promptrandom.AddRandomRange({-50, -10});
-    promptrandom.AddRandomRange({ 10,  50});
+    promptrandom.AddPromptRange({ 9,   19}); // in nanoseconds
+    promptrandom.AddRandomRange({-200, 7});
+    promptrandom.AddRandomRange({ 21,  200});
 }
 
 void Compton::ProcessEvent(const TEvent& event, manager_t&)
 {
-    triggersimu.ProcessEvent(event);
-
     for (const auto& taggerhit : event.Reconstructed().TaggerHits) {
-        // Pass through corrected tagger time into promptrandom
-        promptrandom.SetTaggerTime(triggersimu.GetCorrectedTaggerTime(taggerhit));
-
-        // The Tagger hit is in neither the prompt or random window
-        if (promptrandom.State() == PromptRandom::Case::Outside)
-            continue;
-
-        // A weight it given to the hit depending on whether the hit
-        // is in the prompt or random window. This allows the random
-        // hits to automatically to subtracted out.
-        const double weight = promptrandom.FillWeight();
-        h_PromptRandomWithTriggerSimulation->Fill(taggerhit.Time, weight);
+        h_TaggerTime->Fill(taggerhit.Time);
     }
 
-    // This line loops over all the clusters and taggerhits and
-    // subtracts the times at which they occur and plots that
-    // subtracted time. The peak region represents combinations
-    // of taggerhit times and cluster times in which those events
-    // could possibly be correlated.
+    // Runs ProcessEvent function in TriggerSimulation file which
+    // does the calculations
+    triggersimu.ProcessEvent(event);
 
     for (const auto& clusterhit : event.Reconstructed().Clusters) {
         for (const auto& taggerhit : event.Reconstructed().TaggerHits) {
-            h_TaggerClusterSubtaction->Fill(taggerhit.Time - clusterhit.Time);
+            h_TaggerCBSubtaction->Fill(taggerhit.Time - clusterhit.Time);
         }
     }
 
     for (const auto& taggerhit : event.Reconstructed().TaggerHits) {
-        h_TaggerTime->Fill(taggerhit.Time);
+        // Pass through corrected tagger time into promptrandom
+
+        // Plot tagger time with weighted CBtime subtraction
+        // Use this plot to set prompt and random range
+        const auto& CorrectedTaggerTime = triggersimu.GetCorrectedTaggerTime(taggerhit);
+        h_TaggerCBSubtaction->Fill(CorrectedTaggerTime);
+
+        // This assigns weights to the TaggerHits based on which
+        // time window they fall into
+        promptrandom.SetTaggerTime(CorrectedTaggerTime);
+
+        // When the Tagger hit is in neither the prompt or random
+        // window, then skip
+        if (promptrandom.State() == PromptRandom::Case::Outside)
+            continue;
+
+        // Plot taggerhits with weights. Don't know why taggerhit.Time
+        // is used rather than CorrectedTaggerTime
+        const double weight = promptrandom.FillWeight();
+        h_PromptRandomWithTriggerSimulation->Fill(taggerhit.Time, weight);
     }
 }
 
 void Compton::ShowResult()
 {
     ant::canvas(GetName()+": Tagger Time Stuff")
-            << h_TaggerClusterSubtaction
+            << h_TaggerCBSubtaction
             << h_TaggerTime
             << h_PromptRandomWithTriggerSimulation
             << endc; // actually draws the canvas
