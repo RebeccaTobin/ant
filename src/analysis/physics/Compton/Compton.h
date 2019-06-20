@@ -34,7 +34,9 @@ public:
 
     virtual void ShowResult() override;
 
-    virtual double MissingMass() override;
+    double GetMissingMass(const double& incoming_ph_energy,
+                                  const double& scattered_ph_energy,
+                                  const double& theta);
 
 
 private:
@@ -46,6 +48,7 @@ private:
     TH1D* h_TaggerTime;
     TH1D* h_TaggerCBSubtaction;
     TH1D* h_PromptRandomWithTriggerSimulation;
+    TH1D* h_MissingMass;
     PromptRandom::Switch promptrandom;
     utils::TriggerSimulation triggersimu;
 };

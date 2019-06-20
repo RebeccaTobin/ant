@@ -12,40 +12,52 @@ Compton::Compton(const string& name, OptionsPtr opts) :
     // Histograms are created here but not filled
 
     const BinSettings time_bins(2000, -200, 200);
+    const BinSettings mass_bins(2000, 0, 1100);
 
     h_TaggerTime = HistFac.makeTH1D("Tagger Time",    // title
                                     "t [ns]","#",     // xlabel, ylabel
                                     time_bins, // our binnings
                                     "h_TaggerTime"    // ROOT object name, auto-generated if omitted
                                     );
-    h_TaggerCBSubtaction = HistFac.makeTH1D("Tagger CB Subtaction",    // title
-                                    "t [ns]","#",     // xlabel, ylabel
-                                    time_bins, // our binnings
-                                    "h_TaggerCBSubtaction"    // ROOT object name, auto-generated if omitted
+    h_TaggerCBSubtaction = HistFac.makeTH1D("Tagger CB Subtaction",
+                                    "t [ns]","#",
+                                    time_bins,
+                                    "h_TaggerCBSubtaction"
                                     );
-    h_PromptRandomWithTriggerSimulation = HistFac.makeTH1D("PromptRandom with TriggerSimulation",    // title
-                                    "t [ns]","#",     // xlabel, ylabel
-                                    time_bins, // our binnings
-                                    "h_PromptRandomWithTriggerSimulation"    // ROOT object name, auto-generated if omitted
+    h_PromptRandomWithTriggerSimulation = HistFac.makeTH1D("PromptRandom with TriggerSimulation",
+                                    "t [ns]","#",
+                                    time_bins,
+                                    "h_PromptRandomWithTriggerSimulation"
                                     );
+    h_MissingMass = HistFac.makeTH1D("Missing Mass",
+                                     "mass [MeV/c^2]","#",
+                                     mass_bins,
+                                     "h_MissingMass"
+                                     );
     // Prompt and random windows
     promptrandom.AddPromptRange({ 4,   22}); // in nanoseconds
     promptrandom.AddRandomRange({-200, 0});
     promptrandom.AddRandomRange({ 27,  200});
 }
 
+double Compton::GetMissingMass(const double& incoming_ph_energy,
+                            const double& scattered_ph_energy,
+                            const double& theta) {
+    // Calculates missing mass given the incoming photon energy,
+    // scattered photon energy, and scattered photon angle
+    return (incoming_ph_energy * scattered_ph_energy)*(1.0 - cos(theta))
+            /(incoming_ph_energy - scattered_ph_energy);
+}
+
 void Compton::ProcessEvent(const TEvent& event, manager_t&)
 {
-    for (const auto& taggerhit : event.Reconstructed().TaggerHits) {
-        h_TaggerTime->Fill(taggerhit.Time);
-    }
-
     // Runs ProcessEvent function in TriggerSimulation file which
     // does the calculations
     triggersimu.ProcessEvent(event);
 
     for (const auto& taggerhit : event.Reconstructed().TaggerHits) {
-        // Pass through corrected tagger time into promptrandom
+
+        h_TaggerTime->Fill(taggerhit.Time);
 
         // Plot tagger time with weighted CBtime subtraction
         // Use this plot to set prompt and random range
@@ -65,13 +77,14 @@ void Compton::ProcessEvent(const TEvent& event, manager_t&)
         // is used rather than CorrectedTaggerTime
         const double weight = promptrandom.FillWeight();
         h_PromptRandomWithTriggerSimulation->Fill(taggerhit.Time, weight);
+
+        // MissingMass plot
+        for (const auto& candidatehit : event.Reconstructed().Candidates) {
+            double MissingMass = GetMissingMass(taggerhit.PhotonEnergy,
+                                         candidatehit.CaloEnergy, candidatehit.Theta);
+            h_MissingMass->Fill(MissingMass);
+        }
     }
-}
-
-double Compton::MissingMass(const auto& incoming_ph_energy,
-                            const auto& scattered_ph_energy,
-                            const auto& theta) {
-
 }
 
 
@@ -81,6 +94,7 @@ void Compton::ShowResult()
             << h_TaggerCBSubtaction
             << h_TaggerTime
             << h_PromptRandomWithTriggerSimulation
+            << h_MissingMass
             << endc; // actually draws the canvas
 }
 
