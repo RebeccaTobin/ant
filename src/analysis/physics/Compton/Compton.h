@@ -45,8 +45,8 @@ private:
     // the bins will be. h_nClusters is the name of the histogram.
     // You would put all your histograms here.
     //TH1D* h_TaggerandClusterTime;
-    TH1D* h_TaggerTime;
-    TH1D* h_TaggerCBSubtaction;
+    //TH1D* h_TaggerTime;
+    //TH1D* h_TaggerCBSubtaction;
     TH1D* h_PromptRandomWithTriggerSimulation;
     TH1D* h_MissingMass;
     PromptRandom::Switch promptrandom;

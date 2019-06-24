@@ -14,16 +14,16 @@ Compton::Compton(const string& name, OptionsPtr opts) :
     const BinSettings time_bins(2000, -200, 200);
     const BinSettings mass_bins(2000, 0, 1100);
 
-    h_TaggerTime = HistFac.makeTH1D("Tagger Time",    // title
-                                    "t [ns]","#",     // xlabel, ylabel
-                                    time_bins, // our binnings
-                                    "h_TaggerTime"    // ROOT object name, auto-generated if omitted
-                                    );
-    h_TaggerCBSubtaction = HistFac.makeTH1D("Tagger CB Subtaction",
-                                    "t [ns]","#",
-                                    time_bins,
-                                    "h_TaggerCBSubtaction"
-                                    );
+    //h_TaggerTime = HistFac.makeTH1D("Tagger Time",    // title
+    //                                "t [ns]","#",     // xlabel, ylabel
+    //                                time_bins, // our binnings
+    //                                "h_TaggerTime"    // ROOT object name, auto-generated if omitted
+    //                                );
+    //h_TaggerCBSubtaction = HistFac.makeTH1D("Tagger CB Subtaction",
+    //                                "t [ns]","#",
+    //                                time_bins,
+    //                                "h_TaggerCBSubtaction"
+    //                                );
     h_PromptRandomWithTriggerSimulation = HistFac.makeTH1D("PromptRandom with TriggerSimulation",
                                     "t [ns]","#",
                                     time_bins,
@@ -35,9 +35,9 @@ Compton::Compton(const string& name, OptionsPtr opts) :
                                      "h_MissingMass"
                                      );
     // Prompt and random windows
-    promptrandom.AddPromptRange({ 4,   22}); // in nanoseconds
-    promptrandom.AddRandomRange({-200, 0});
-    promptrandom.AddRandomRange({ 27,  200});
+    promptrandom.AddPromptRange({ 9, 19 }); // in nanoseconds
+    promptrandom.AddRandomRange({ -200, 7 });
+    promptrandom.AddRandomRange({ 21, 200 });
 }
 
 double Compton::GetMissingMass(const double& incoming_ph_energy,
@@ -55,14 +55,25 @@ void Compton::ProcessEvent(const TEvent& event, manager_t&)
     // does the calculations
     triggersimu.ProcessEvent(event);
 
+    const auto target_vec = LorentzVec({0,0,0},ParticleTypeDatabase::Proton.Mass());
+
+    //const auto scattered_ph_vec = LorentzVec({});
+
+    cout << target_vec << endl;
+
     for (const auto& taggerhit : event.Reconstructed().TaggerHits) {
 
-        h_TaggerTime->Fill(taggerhit.Time);
+        // Lorentz momentum vector for incoming photon.
+        // Momentum only in the z-direction
+        const auto incoming_ph_vec = LorentzVec({0,0,taggerhit.PhotonEnergy},
+                                                taggerhit.PhotonEnergy);
+
+        //h_TaggerTime->Fill(taggerhit.Time);
 
         // Plot tagger time with weighted CBtime subtraction
         // Use this plot to set prompt and random range
         const auto& CorrectedTaggerTime = triggersimu.GetCorrectedTaggerTime(taggerhit);
-        h_TaggerCBSubtaction->Fill(CorrectedTaggerTime);
+        //h_TaggerCBSubtaction->Fill(CorrectedTaggerTime);
 
         // This assigns weights to the TaggerHits based on which
         // time window they fall into
@@ -83,6 +94,8 @@ void Compton::ProcessEvent(const TEvent& event, manager_t&)
             double MissingMass = GetMissingMass(taggerhit.PhotonEnergy,
                                          candidatehit.CaloEnergy, candidatehit.Theta);
             h_MissingMass->Fill(MissingMass);
+
+
         }
     }
 }
@@ -91,8 +104,8 @@ void Compton::ProcessEvent(const TEvent& event, manager_t&)
 void Compton::ShowResult()
 {
     ant::canvas(GetName()+": Tagger Time Stuff")
-            << h_TaggerCBSubtaction
-            << h_TaggerTime
+            //<< h_TaggerCBSubtaction
+            //<< h_TaggerTime
             << h_PromptRandomWithTriggerSimulation
             << h_MissingMass
             << endc; // actually draws the canvas
