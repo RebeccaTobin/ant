@@ -34,10 +34,6 @@ public:
 
     virtual void ShowResult() override;
 
-    double GetMissingMass(const double& incoming_ph_energy,
-                                  const double& scattered_ph_energy,
-                                  const double& theta);
-
 
 private:
     // TH1 is a root command for making histograms. The D at the
@@ -48,7 +44,7 @@ private:
     //TH1D* h_TaggerTime;
     //TH1D* h_TaggerCBSubtaction;
     TH1D* h_PromptRandomWithTriggerSimulation;
-    TH1D* h_MissingMass;
+    TH1D* h_MissingMass2_1;
     PromptRandom::Switch promptrandom;
     utils::TriggerSimulation triggersimu;
 };

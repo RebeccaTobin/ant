@@ -19,10 +19,10 @@ Compton::Compton(const string& name, OptionsPtr opts) :
                                     time_bins,
                                     "h_PromptRandomWithTriggerSimulation"
                                     );
-    h_MissingMass = HistFac.makeTH1D("Missing Mass",
+    h_MissingMass2_1 = HistFac.makeTH1D("Missing Mass2_1",
                                      "mass [MeV/c^2]","#",
                                      mass_bins,
-                                     "h_MissingMass"
+                                     "h_MissingMass2_1"
                                      );
 
     // Prompt and random windows
@@ -47,6 +47,10 @@ void Compton::ProcessEvent(const TEvent& event, manager_t&)
         // Note: momentum only in the z-direction
         LorentzVec incoming_ph_vec = LorentzVec({0,0,taggerhit.PhotonEnergy},
                                                 taggerhit.PhotonEnergy);
+        // Decleration of momentum 4 vector for scattered photon
+        // and recoil proton
+        LorentzVec scattered_ph_vec;
+        LorentzVec recoil_pr_vec;
 
         // Apply trigger simulation to tagger hits
         // This subtracts a weighted time from the CB (see wiki)
@@ -68,11 +72,6 @@ void Compton::ProcessEvent(const TEvent& event, manager_t&)
         const double weight = promptrandom.FillWeight();
         h_PromptRandomWithTriggerSimulation->Fill(taggerhit.Time, weight);
 
-        // Decleration of momentum 4 vector for scattered photon
-        // and recoil proton
-        LorentzVec scattered_ph_vec;
-        LorentzVec recoil_pr_vec;
-
         for (const auto& candidate : event.Reconstructed().Candidates) {
 
             // Check if Candidate is a photon.
@@ -89,7 +88,7 @@ void Compton::ProcessEvent(const TEvent& event, manager_t&)
                 // the momentum vector using .M()
                 // Should be 938MeV if there was a Compton
                 // event involving these 2 photons
-                h_MissingMass->Fill(recoil_pr_vec.M());
+                h_MissingMass2_1->Fill(recoil_pr_vec.M());
 
             }
         }
@@ -99,12 +98,13 @@ void Compton::ProcessEvent(const TEvent& event, manager_t&)
 
 void Compton::ShowResult()
 {
-    ant::canvas(GetName()+": Tagger Time Stuff")
-            //<< h_TaggerCBSubtaction
-            //<< h_TaggerTime
+    ant::canvas(GetName()+": Tagger Time Plots")
             << h_PromptRandomWithTriggerSimulation
-            << h_MissingMass
             << endc; // actually draws the canvas
+
+    ant::canvas(GetName()+": Missing Mass Plots")
+            << h_MissingMass2_1
+            << endc;
 }
 
 // A macro that registers the Compton class with Ant so that

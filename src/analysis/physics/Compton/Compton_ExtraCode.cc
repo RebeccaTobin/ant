@@ -19,7 +19,10 @@ h_TaggerCBSubtaction->Fill(CorrectedTaggerTime);
  * ////////////////////////////////////////////////
 */
 
-
+// In h file
+double GetMissingMass(const double& incoming_ph_energy,
+                              const double& scattered_ph_energy,
+                              const double& theta);
 
 // In constructor, creating a histogram
 h_TaggerTime = HistFac.makeTH1D("Tagger Time",    // title
