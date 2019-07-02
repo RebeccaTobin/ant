@@ -19,10 +19,45 @@ Compton::Compton(const string& name, OptionsPtr opts) :
                                     time_bins,
                                     "h_PromptRandomWithTriggerSimulation"
                                     );
-    h_MissingMass2_1 = HistFac.makeTH1D("Missing Mass2_1",
+    h_MissingMass = HistFac.makeTH1D("No Filter",
                                      "mass [MeV/c^2]","#",
                                      mass_bins,
-                                     "h_MissingMass2_1"
+                                     "h_MissingMass"
+                                     );
+    h_MissingMass1 = HistFac.makeTH1D("With weights",
+                                     "mass [MeV/c^2]","#",
+                                     mass_bins,
+                                     "h_MissingMass1"
+                                     );
+    h_MissingMass01 = HistFac.makeTH1D("Veto, no weights",
+                                     "mass [MeV/c^2]","#",
+                                     mass_bins,
+                                     "h_MissingMass01"
+                                     );
+    h_MissingMass11 = HistFac.makeTH1D("Veto with weights",
+                                     "mass [MeV/c^2]","#",
+                                     mass_bins,
+                                     "h_MissingMass11"
+                                     );
+    h_MissingMass002 = HistFac.makeTH1D("2 particles, no veto or weights",
+                                     "mass [MeV/c^2]","#",
+                                     mass_bins,
+                                     "h_MissingMass002"
+                                     );
+    h_MissingMass102 = HistFac.makeTH1D("2 particles, no veto, with weights",
+                                     "mass [MeV/c^2]","#",
+                                     mass_bins,
+                                     "h_MissingMass102"
+                                     );
+    h_MissingMass012 = HistFac.makeTH1D("2 particles with veto, no weights",
+                                     "mass [MeV/c^2]","#",
+                                     mass_bins,
+                                     "h_MissingMass012"
+                                     );
+    h_MissingMass112 = HistFac.makeTH1D("2 particles with veto and weights",
+                                     "mass [MeV/c^2]","#",
+                                     mass_bins,
+                                     "h_MissingMass112"
                                      );
 
     // Prompt and random windows
@@ -34,6 +69,7 @@ Compton::Compton(const string& name, OptionsPtr opts) :
 
 void Compton::ProcessEvent(const TEvent& event, manager_t&)
 {
+
     // Runs ProcessEvent function in TriggerSimulation file which
     // does the calculations
     triggersimu.ProcessEvent(event);
@@ -51,6 +87,7 @@ void Compton::ProcessEvent(const TEvent& event, manager_t&)
         // and recoil proton
         LorentzVec scattered_ph_vec;
         LorentzVec recoil_pr_vec;
+        double pr_mass;
 
         // Apply trigger simulation to tagger hits
         // This subtracts a weighted time from the CB (see wiki)
@@ -74,22 +111,44 @@ void Compton::ProcessEvent(const TEvent& event, manager_t&)
 
         for (const auto& candidate : event.Reconstructed().Candidates) {
 
-            // Check if Candidate is a photon.
+            // Momentum 4 vector for scattered photon
+            scattered_ph_vec = LorentzVec(vec3(candidate),
+                                          candidate.CaloEnergy);
+            // Calculating the momentum 4 vector for the possible
+            // recoil proton
+            recoil_pr_vec = incoming_ph_vec + target_vec - scattered_ph_vec;
+            // Calculating the mass of the recoil proton from
+            // the momentum vector using .M()
+            // Should be 938MeV if there was a Compton
+            // event involving these 2 photons
+            pr_mass = recoil_pr_vec.M();
+
+            // No filter
+            h_MissingMass->Fill(pr_mass);
+            // Filter 1: weights
+            h_MissingMass1->Fill(pr_mass,weight);
+
+            // Filter 2: check if Candidate is a photon.
             // Arbitrary cut off of 0.2 MeV for how much energy the Veto
             // should get if hit is a photon (theoretically should be 0)
-            if (candidate.VetoEnergy < .2) {
-                // Momentum 4 vector for scattered photon
-                scattered_ph_vec = LorentzVec(vec3(candidate),
-                                              candidate.CaloEnergy);
-                // Calculating the momentum 4 vector for the possible
-                // recoil proton
-                recoil_pr_vec = incoming_ph_vec + target_vec - scattered_ph_vec;
-                // Calculating the mass of the recoil proton from
-                // the momentum vector using .M()
-                // Should be 938MeV if there was a Compton
-                // event involving these 2 photons
-                h_MissingMass2_1->Fill(recoil_pr_vec.M());
+            if (candidate.VetoEnergy < .2)
+            {
+                h_MissingMass01->Fill(pr_mass);
+                h_MissingMass11->Fill(pr_mass,weight);
+            }
 
+            // Filter 3: check if there were two particles
+            // present in the event
+            if (event.Reconstructed().Candidates.size() == 2)
+            {
+                h_MissingMass002->Fill(pr_mass);
+                h_MissingMass102->Fill(pr_mass,weight);
+
+                if (candidate.VetoEnergy < .2)
+                {
+                    h_MissingMass012->Fill(pr_mass);
+                    h_MissingMass112->Fill(pr_mass,weight);
+                }
             }
         }
     }
@@ -103,7 +162,14 @@ void Compton::ShowResult()
             << endc; // actually draws the canvas
 
     ant::canvas(GetName()+": Missing Mass Plots")
-            << h_MissingMass2_1
+            << h_MissingMass
+            << h_MissingMass1
+            << h_MissingMass01
+            << h_MissingMass11
+            << h_MissingMass002
+            << h_MissingMass102
+            << h_MissingMass012
+            << h_MissingMass112
             << endc;
 }
 

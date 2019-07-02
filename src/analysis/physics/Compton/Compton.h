@@ -44,7 +44,14 @@ private:
     //TH1D* h_TaggerTime;
     //TH1D* h_TaggerCBSubtaction;
     TH1D* h_PromptRandomWithTriggerSimulation;
-    TH1D* h_MissingMass2_1;
+    TH1D* h_MissingMass;
+    TH1D* h_MissingMass1;
+    TH1D* h_MissingMass01;
+    TH1D* h_MissingMass11;
+    TH1D* h_MissingMass002;
+    TH1D* h_MissingMass102;
+    TH1D* h_MissingMass012;
+    TH1D* h_MissingMass112;
     PromptRandom::Switch promptrandom;
     utils::TriggerSimulation triggersimu;
 };
