@@ -59,6 +59,27 @@ Compton::Compton(const string& name, OptionsPtr opts) :
                                      mass_bins,
                                      "h_MissingMass112"
                                      );
+    h_MissingMass001 = HistFac.makeTH1D("1 particle, no veto or weights",
+                                     "mass [MeV/c^2]","#",
+                                     mass_bins,
+                                     "h_MissingMass001"
+                                     );
+    h_MissingMass101 = HistFac.makeTH1D("1 particle, no veto, with weights",
+                                     "mass [MeV/c^2]","#",
+                                     mass_bins,
+                                     "h_MissingMass101"
+                                     );
+    h_MissingMass011 = HistFac.makeTH1D("1 particle with veto, no weights",
+                                     "mass [MeV/c^2]","#",
+                                     mass_bins,
+                                     "h_MissingMass011"
+                                     );
+    h_MissingMass111 = HistFac.makeTH1D("1 particle with veto and weights",
+                                     "mass [MeV/c^2]","#",
+                                     mass_bins,
+                                     "h_MissingMass111"
+                                     );
+
 
     // Prompt and random windows
     promptrandom.AddPromptRange({ 9, 19 }); // in nanoseconds
@@ -137,17 +158,51 @@ void Compton::ProcessEvent(const TEvent& event, manager_t&)
                 h_MissingMass11->Fill(pr_mass,weight);
             }
 
-            // Filter 3: check if there were two particles
-            // present in the event
-            if (event.Reconstructed().Candidates.size() == 2)
+        }
+        // Filter 3: check if there were two particles
+        // present in the event
+        if (event.Reconstructed().Candidates.size() == 2)
+        {
+            for (const auto& candidate : event.Reconstructed().Candidates)
             {
+                // Doing all this again
+                scattered_ph_vec = LorentzVec(vec3(candidate),
+                                              candidate.CaloEnergy);
+                recoil_pr_vec = incoming_ph_vec + target_vec - scattered_ph_vec;
+                pr_mass = recoil_pr_vec.M();
+
+                // 2 particles, no Veto, with and without weights
                 h_MissingMass002->Fill(pr_mass);
                 h_MissingMass102->Fill(pr_mass,weight);
 
                 if (candidate.VetoEnergy < .2)
                 {
+                    // 2 particles, with Veto, with and without weights
                     h_MissingMass012->Fill(pr_mass);
                     h_MissingMass112->Fill(pr_mass,weight);
+                }
+            }
+        }
+
+        if (event.Reconstructed().Candidates.size() == 1)
+        {
+            for (const auto& candidate : event.Reconstructed().Candidates)
+            {
+                // Doing all this again
+                scattered_ph_vec = LorentzVec(vec3(candidate),
+                                          candidate.CaloEnergy);
+                recoil_pr_vec = incoming_ph_vec + target_vec - scattered_ph_vec;
+                pr_mass = recoil_pr_vec.M();
+
+                // 1 particle, no Veto, with and without weights
+                h_MissingMass001->Fill(pr_mass);
+                h_MissingMass101->Fill(pr_mass,weight);
+
+                if (candidate.VetoEnergy < .2)
+                {
+                    // 1 particle, with Veto, with and without weights
+                    h_MissingMass011->Fill(pr_mass);
+                    h_MissingMass111->Fill(pr_mass,weight);
                 }
             }
         }
@@ -170,6 +225,10 @@ void Compton::ShowResult()
             << h_MissingMass102
             << h_MissingMass012
             << h_MissingMass112
+            << h_MissingMass001
+            << h_MissingMass101
+            << h_MissingMass011
+            << h_MissingMass111
             << endc;
 }
 

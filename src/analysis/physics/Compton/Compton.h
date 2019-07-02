@@ -52,6 +52,10 @@ private:
     TH1D* h_MissingMass102;
     TH1D* h_MissingMass012;
     TH1D* h_MissingMass112;
+    TH1D* h_MissingMass001;
+    TH1D* h_MissingMass101;
+    TH1D* h_MissingMass011;
+    TH1D* h_MissingMass111;
     PromptRandom::Switch promptrandom;
     utils::TriggerSimulation triggersimu;
 };
