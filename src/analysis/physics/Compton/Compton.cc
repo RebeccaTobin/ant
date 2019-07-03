@@ -12,72 +12,84 @@ Compton::Compton(const string& name, OptionsPtr opts) :
     // Histograms are created here but not filled
 
     const BinSettings time_bins(2000, -200, 200);
-    const BinSettings mass_bins(1000, 0, 1100);
+    BinSettings mass_bins(1000, 700, 1100);
 
     h_PromptRandomWithTriggerSimulation = HistFac.makeTH1D("PromptRandom with TriggerSimulation",
                                     "t [ns]","#",
                                     time_bins,
                                     "h_PromptRandomWithTriggerSimulation"
                                     );
-    h_MissingMass = HistFac.makeTH1D("No Filter",
+    h_MissingMass = HistFac.makeTH1D("All Taggerhits, all Candidates",
                                      "mass [MeV/c^2]","#",
                                      mass_bins,
                                      "h_MissingMass"
                                      );
-    h_MissingMass1 = HistFac.makeTH1D("With weights",
+    h_MissingMass1 = HistFac.makeTH1D("Weighted Taggerhits, all Candidates",
                                      "mass [MeV/c^2]","#",
                                      mass_bins,
                                      "h_MissingMass1"
                                      );
-    h_MissingMass01 = HistFac.makeTH1D("Veto, no weights",
+    h_MissingMass01 = HistFac.makeTH1D("All Taggerhits, no Veto",
                                      "mass [MeV/c^2]","#",
                                      mass_bins,
                                      "h_MissingMass01"
                                      );
-    h_MissingMass11 = HistFac.makeTH1D("Veto with weights",
+    h_MissingMass11 = HistFac.makeTH1D("Weighted Taggerhits, no Veto",
                                      "mass [MeV/c^2]","#",
                                      mass_bins,
                                      "h_MissingMass11"
                                      );
-    h_MissingMass002 = HistFac.makeTH1D("2 particles, no veto or weights",
-                                     "mass [MeV/c^2]","#",
-                                     mass_bins,
-                                     "h_MissingMass002"
-                                     );
-    h_MissingMass102 = HistFac.makeTH1D("2 particles, no veto, with weights",
-                                     "mass [MeV/c^2]","#",
-                                     mass_bins,
-                                     "h_MissingMass102"
-                                     );
-    h_MissingMass012 = HistFac.makeTH1D("2 particles with veto, no weights",
-                                     "mass [MeV/c^2]","#",
-                                     mass_bins,
-                                     "h_MissingMass012"
-                                     );
-    h_MissingMass112 = HistFac.makeTH1D("2 particles with veto and weights",
-                                     "mass [MeV/c^2]","#",
-                                     mass_bins,
-                                     "h_MissingMass112"
-                                     );
-    h_MissingMass001 = HistFac.makeTH1D("1 particle, no veto or weights",
+    h_MissingMass001 = HistFac.makeTH1D("All Taggerhits, 1 particle event",
                                      "mass [MeV/c^2]","#",
                                      mass_bins,
                                      "h_MissingMass001"
                                      );
-    h_MissingMass101 = HistFac.makeTH1D("1 particle, no veto, with weights",
+    h_MissingMass101 = HistFac.makeTH1D("Weighted Taggerhits, 1 particle event",
                                      "mass [MeV/c^2]","#",
                                      mass_bins,
                                      "h_MissingMass101"
                                      );
-    h_MissingMass011 = HistFac.makeTH1D("1 particle with veto, no weights",
+    h_MissingMass011 = HistFac.makeTH1D("All Taggerhits, 1 particle event with no veto",
                                      "mass [MeV/c^2]","#",
                                      mass_bins,
                                      "h_MissingMass011"
                                      );
-    h_MissingMass111 = HistFac.makeTH1D("1 particle with veto and weights",
+    h_MissingMass111 = HistFac.makeTH1D("Weighted Taggerhits, 1 particle event with no veto",
                                      "mass [MeV/c^2]","#",
                                      mass_bins,
                                      "h_MissingMass111"
+                                     );
+    h_MissingMass002 = HistFac.makeTH1D("All Taggerhis, 2 particle event",
+                                     "mass [MeV/c^2]","#",
+                                     mass_bins,
+                                     "h_MissingMass002"
+                                     );
+    h_MissingMass102 = HistFac.makeTH1D("Weighted Taggerhis, 2 particle event",
+                                     "mass [MeV/c^2]","#",
+                                     mass_bins,
+                                     "h_MissingMass102"
+                                     );
+    h_MissingMass012 = HistFac.makeTH1D("All Taggerhits, 2 particle event, only one has no veto",
+                                     "mass [MeV/c^2]","#",
+                                     mass_bins,
+                                     "h_MissingMass012"
+                                     );
+    h_MissingMass112 = HistFac.makeTH1D("Weighted Taggerhits, 2 particle event, only one has no veto",
+                                     "mass [MeV/c^2]","#",
+                                     mass_bins,
+                                     "h_MissingMass112"
+                                     );
+    h_MissingMass0021 = HistFac.makeTH1D("All Taggerhits, 2 particles event, only plot particle with "
+                                         "closer missing mass",
+                                     "mass [MeV/c^2]","#",
+                                     mass_bins,
+                                     "h_MissingMass0021"
+                                     );
+    h_MissingMass1021 = HistFac.makeTH1D("Weighted Taggerhits, 2 particles event, only plot particle with "
+                                         "closer missing mass",
+                                     "mass [MeV/c^2]","#",
+                                     mass_bins,
+                                     "h_MissingMass1021"
                                      );
 
 
@@ -90,7 +102,6 @@ Compton::Compton(const string& name, OptionsPtr opts) :
 
 void Compton::ProcessEvent(const TEvent& event, manager_t&)
 {
-
     // Runs ProcessEvent function in TriggerSimulation file which
     // does the calculations
     triggersimu.ProcessEvent(event);
@@ -98,8 +109,8 @@ void Compton::ProcessEvent(const TEvent& event, manager_t&)
     // Momentum 4 vector for target (i.e. stationary proton)
     const auto target_vec = LorentzVec({0,0,0}, ParticleTypeDatabase::Proton.Mass());
 
-    for (const auto& taggerhit : event.Reconstructed().TaggerHits) {
-
+    for (const auto& taggerhit : event.Reconstructed().TaggerHits)
+    {
         // Momentum 4 vector for incoming photon.
         // Note: momentum only in the z-direction
         LorentzVec incoming_ph_vec = LorentzVec({0,0,taggerhit.PhotonEnergy},
@@ -112,7 +123,8 @@ void Compton::ProcessEvent(const TEvent& event, manager_t&)
 
         // Apply trigger simulation to tagger hits
         // This subtracts a weighted time from the CB (see wiki)
-        const auto& CorrectedTaggerTime = triggersimu.GetCorrectedTaggerTime(taggerhit);
+        const auto& CorrectedTaggerTime =
+                triggersimu.GetCorrectedTaggerTime(taggerhit);
 
 
         // This assigns weights to the TaggerHits based on which
@@ -182,6 +194,35 @@ void Compton::ProcessEvent(const TEvent& event, manager_t&)
                     h_MissingMass112->Fill(pr_mass,weight);
                 }
             }
+
+            double front_energy =
+                    event.Reconstructed().Candidates.front().CaloEnergy;
+            double back_energy =
+                    event.Reconstructed().Candidates.back().CaloEnergy;
+
+            if (abs(front_energy - 938) < abs(back_energy - 938))
+            {
+                // Doing all this again
+                scattered_ph_vec = LorentzVec(vec3(event.Reconstructed().
+                                                   Candidates.front()),
+                                                   front_energy);
+                recoil_pr_vec = incoming_ph_vec + target_vec - scattered_ph_vec;
+                pr_mass = recoil_pr_vec.M();
+                h_MissingMass0021->Fill(pr_mass);
+                h_MissingMass1021->Fill(pr_mass,weight);
+            }
+            else if (abs(front_energy - 938) > abs(back_energy - 938))
+            {
+                // Doing all this again
+                scattered_ph_vec = LorentzVec(vec3(event.Reconstructed().
+                                                   Candidates.back()),
+                                                   back_energy);
+                recoil_pr_vec = incoming_ph_vec + target_vec - scattered_ph_vec;
+                pr_mass = recoil_pr_vec.M();
+                h_MissingMass0021->Fill(pr_mass);
+                h_MissingMass1021->Fill(pr_mass,weight);
+            }
+            else { continue; }
         }
 
         if (event.Reconstructed().Candidates.size() == 1)
@@ -221,14 +262,18 @@ void Compton::ShowResult()
             << h_MissingMass1
             << h_MissingMass01
             << h_MissingMass11
-            << h_MissingMass002
-            << h_MissingMass102
-            << h_MissingMass012
-            << h_MissingMass112
+            << endc;
+    ant::canvas(GetName()+": Missing Mass Plots 2")
             << h_MissingMass001
             << h_MissingMass101
             << h_MissingMass011
             << h_MissingMass111
+            << h_MissingMass002
+            << h_MissingMass102
+            << h_MissingMass012
+            << h_MissingMass112
+            << h_MissingMass0021
+            << h_MissingMass1021
             << endc;
 }
 
