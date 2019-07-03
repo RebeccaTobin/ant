@@ -175,6 +175,7 @@ void Compton::ProcessEvent(const TEvent& event, manager_t&)
         // present in the event
         if (event.Reconstructed().Candidates.size() == 2)
         {
+            // Using both candidates to calc and plot missing mass
             for (const auto& candidate : event.Reconstructed().Candidates)
             {
                 // Doing all this again
@@ -183,16 +184,60 @@ void Compton::ProcessEvent(const TEvent& event, manager_t&)
                 recoil_pr_vec = incoming_ph_vec + target_vec - scattered_ph_vec;
                 pr_mass = recoil_pr_vec.M();
 
-                // 2 particles, no Veto, with and without weights
+                // 2 particles in event, with and without weights
                 h_MissingMass002->Fill(pr_mass);
                 h_MissingMass102->Fill(pr_mass,weight);
 
-                if (candidate.VetoEnergy < .2)
-                {
-                    // 2 particles, with Veto, with and without weights
-                    h_MissingMass012->Fill(pr_mass);
-                    h_MissingMass112->Fill(pr_mass,weight);
-                }
+//                if (candidate.VetoEnergy < .2)
+//                {
+//                    h_MissingMass012->Fill(pr_mass);
+//                    h_MissingMass112->Fill(pr_mass,weight);
+//                }
+            }
+
+            // Looking for Candidates where one particle
+            // is charged and the other one isn't, then
+            // only using the uncharged particle (presumably
+            // a photon) to calculated and plot missing mass
+            bool front_veto;
+            bool back_veto;
+
+            if (event.Reconstructed().Candidates.front().VetoEnergy < .2)
+            {
+                front_veto = false;
+            }
+            else { front_veto = true; }
+
+            if (event.Reconstructed().Candidates.back().VetoEnergy < .2)
+            {
+                back_veto = false;
+            }
+            else { back_veto = true; }
+
+            if ((front_veto == false) & (back_veto == true))
+            {
+                // Doing all this again
+                scattered_ph_vec = LorentzVec(vec3(event.Reconstructed().
+                                              Candidates.front()),
+                                              event.Reconstructed().Candidates.
+                                              front().CaloEnergy);
+                recoil_pr_vec = incoming_ph_vec + target_vec - scattered_ph_vec;
+                pr_mass = recoil_pr_vec.M();
+                h_MissingMass012->Fill(pr_mass);
+                h_MissingMass112->Fill(pr_mass,weight);
+
+            }
+            if ((front_veto == true) & (back_veto == false))
+            {
+                // Doing all this again
+                scattered_ph_vec = LorentzVec(vec3(event.Reconstructed().
+                                              Candidates.back()),
+                                              event.Reconstructed().Candidates.
+                                              back().CaloEnergy);
+                recoil_pr_vec = incoming_ph_vec + target_vec - scattered_ph_vec;
+                pr_mass = recoil_pr_vec.M();
+                h_MissingMass012->Fill(pr_mass);
+                h_MissingMass112->Fill(pr_mass,weight);
             }
 
             double front_energy =
