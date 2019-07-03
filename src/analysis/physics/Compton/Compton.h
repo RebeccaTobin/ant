@@ -60,6 +60,11 @@ private:
     TH1D* h_MissingMass1021;
     PromptRandom::Switch promptrandom;
     utils::TriggerSimulation triggersimu;
+
+    // Options in command line
+    double tagger_energy_low;     // in MeV
+    double tagger_energy_high;
+
 };
 
 }}}

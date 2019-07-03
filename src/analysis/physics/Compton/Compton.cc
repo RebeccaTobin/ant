@@ -97,6 +97,14 @@ Compton::Compton(const string& name, OptionsPtr opts) :
     promptrandom.AddPromptRange({ 9, 19 }); // in nanoseconds
     promptrandom.AddRandomRange({ -200, 7 });
     promptrandom.AddRandomRange({ 21, 200 });
+
+    tagger_energy_low = 0;
+    tagger_energy_high = 1000;
+    if (opts->HasOption("low"))
+        tagger_energy_low = opts->Get<double>("low", 0);
+    if (opts->HasOption("high"))
+        tagger_energy_high = opts->Get<double>("high", 1000);
+
 }
 
 
@@ -111,6 +119,13 @@ void Compton::ProcessEvent(const TEvent& event, manager_t&)
 
     for (const auto& taggerhit : event.Reconstructed().TaggerHits)
     {
+        if ((taggerhit.PhotonEnergy < tagger_energy_low) ||
+                (taggerhit.PhotonEnergy > tagger_energy_high))
+        {
+            continue;
+        }
+
+
         // Momentum 4 vector for incoming photon.
         // Note: momentum only in the z-direction
         LorentzVec incoming_ph_vec = LorentzVec({0,0,taggerhit.PhotonEnergy},
@@ -188,31 +203,24 @@ void Compton::ProcessEvent(const TEvent& event, manager_t&)
                 h_MissingMass002->Fill(pr_mass);
                 h_MissingMass102->Fill(pr_mass,weight);
 
-//                if (candidate.VetoEnergy < .2)
-//                {
-//                    h_MissingMass012->Fill(pr_mass);
-//                    h_MissingMass112->Fill(pr_mass,weight);
-//                }
             }
 
             // Looking for Candidates where one particle
             // is charged and the other one isn't, then
             // only using the uncharged particle (presumably
             // a photon) to calculated and plot missing mass
-            bool front_veto;
-            bool back_veto;
+            bool front_veto = true;
+            bool back_veto = true;
 
             if (event.Reconstructed().Candidates.front().VetoEnergy < .2)
             {
                 front_veto = false;
             }
-            else { front_veto = true; }
 
             if (event.Reconstructed().Candidates.back().VetoEnergy < .2)
             {
                 back_veto = false;
             }
-            else { back_veto = true; }
 
             if ((front_veto == false) & (back_veto == true))
             {
@@ -298,17 +306,20 @@ void Compton::ProcessEvent(const TEvent& event, manager_t&)
 
 void Compton::ShowResult()
 {
-    ant::canvas(GetName()+": Tagger Time Plots")
+    ant::canvas(GetName()+": Tagger Time Plots, incoming photon energy range: "
+                          )
             << h_PromptRandomWithTriggerSimulation
             << endc; // actually draws the canvas
 
-    ant::canvas(GetName()+": Missing Mass Plots")
+    ant::canvas(GetName()+": Missing Mass Plots, incoming photon energy range: "
+                          )
             << h_MissingMass
             << h_MissingMass1
             << h_MissingMass01
             << h_MissingMass11
             << endc;
-    ant::canvas(GetName()+": Missing Mass Plots 2")
+    ant::canvas(GetName()+": Missing Mass Plots 2, incoming photon energy range: "
+                          )
             << h_MissingMass001
             << h_MissingMass101
             << h_MissingMass011
