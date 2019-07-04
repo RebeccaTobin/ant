@@ -34,6 +34,8 @@ public:
 
     virtual void ShowResult() override;
 
+    bool IsParticleCharged(double veto_energy);
+
 
 private:
     // TH1 is a root command for making histograms. The D at the
@@ -58,6 +60,14 @@ private:
     TH1D* h_MissingMass112;
     TH1D* h_MissingMass0021;
     TH1D* h_MissingMass1021;
+    TH1D* h_MissingMass00201;
+    TH1D* h_MissingMass10201;
+    TH1D* h_MissingMass01201;
+    TH1D* h_MissingMass11201;
+    TH1D* h_MissingMass00211;
+    TH1D* h_MissingMass10211;
+    TH1D* h_CoplanarAngle;
+    TH1D* h_OpeningAngle;
     PromptRandom::Switch promptrandom;
     utils::TriggerSimulation triggersimu;
 

@@ -13,6 +13,8 @@ Compton::Compton(const string& name, OptionsPtr opts) :
 
     const BinSettings time_bins(2000, -200, 200);
     BinSettings mass_bins(1000, 700, 1100);
+    const BinSettings angle_bins1(60 , 120 , 240);
+    const BinSettings angle_bins2(90 , 0 , 180);
 
     h_PromptRandomWithTriggerSimulation = HistFac.makeTH1D("PromptRandom with TriggerSimulation",
                                     "t [ns]","#",
@@ -79,17 +81,60 @@ Compton::Compton(const string& name, OptionsPtr opts) :
                                      mass_bins,
                                      "h_MissingMass112"
                                      );
-    h_MissingMass0021 = HistFac.makeTH1D("All Taggerhits, 2 particles event, only plot particle with "
+    h_MissingMass0021 = HistFac.makeTH1D("All Taggerhits, 2 particle event, only plot particle with "
                                          "closer missing mass",
                                      "mass [MeV/c^2]","#",
                                      mass_bins,
                                      "h_MissingMass0021"
                                      );
-    h_MissingMass1021 = HistFac.makeTH1D("Weighted Taggerhits, 2 particles event, only plot particle with "
+    h_MissingMass1021 = HistFac.makeTH1D("Weighted Taggerhits, 2 particle event, only plot particle with "
                                          "closer missing mass",
                                      "mass [MeV/c^2]","#",
                                      mass_bins,
                                      "h_MissingMass1021"
+                                     );
+    h_MissingMass00201 = HistFac.makeTH1D("All Taggerhits, 2 particle coplanar event",
+                                     "mass [MeV/c^2]","#",
+                                     mass_bins,
+                                     "h_MissingMass00201"
+                                     );
+    h_MissingMass10201 = HistFac.makeTH1D("Weighted Taggerhits, 2 particle coplanar event",
+                                     "mass [MeV/c^2]","#",
+                                     mass_bins,
+                                     "h_MissingMass10201"
+                                     );
+    h_MissingMass01201 = HistFac.makeTH1D("All Taggerhits, 2 particle coplanar event, no veto",
+                                     "mass [MeV/c^2]","#",
+                                     mass_bins,
+                                     "h_MissingMass01201"
+                                     );
+    h_MissingMass11201 = HistFac.makeTH1D("Weighted Taggerhits, 2 particle coplanar event, no veto",
+                                     "mass [MeV/c^2]","#",
+                                     mass_bins,
+                                     "h_MissingMass11201"
+                                     );
+    h_MissingMass00211 = HistFac.makeTH1D("All Taggerhits, 2 particle coplanar event,"
+                                          " plot only particle with closer missing mass",
+                                     "mass [MeV/c^2]","#",
+                                     mass_bins,
+                                     "h_MissingMass00211"
+                                     );
+    h_MissingMass10211 = HistFac.makeTH1D("Weighted Taggerhits, 2 particle coplanar event,"
+                                          " plot only particle with closer missing mass",
+                                     "mass [MeV/c^2]","#",
+                                     mass_bins,
+                                     "h_MissingMass10211"
+                                     );
+
+    h_CoplanarAngle = HistFac.makeTH1D("Coplanar Angle",
+                                     "anlge [degrees]","#",
+                                     angle_bins1,
+                                     "h_CoplanarAngle"
+                                     );
+    h_OpeningAngle = HistFac.makeTH1D("Opening Angle",
+                                     "anlge [degrees]","#",
+                                     angle_bins2,
+                                     "h_OpeningAngle"
                                      );
 
 
@@ -106,7 +151,14 @@ Compton::Compton(const string& name, OptionsPtr opts) :
         tagger_energy_high = opts->Get<double>("high", 1000);
 
 }
-
+// Checks if veto_energy meets threshold for particle
+// being considered charged. Returns true if particle
+// is charged and false if it is not
+bool Compton::IsParticleCharged(double veto_energy)
+{
+    if (veto_energy < .2) { return false; }
+    if (veto_energy > .2) { return true; }
+}
 
 void Compton::ProcessEvent(const TEvent& event, manager_t&)
 {
@@ -176,14 +228,18 @@ void Compton::ProcessEvent(const TEvent& event, manager_t&)
             // Filter 1: weights
             h_MissingMass1->Fill(pr_mass,weight);
 
-            // Filter 2: check if Candidate is a photon.
-            // Arbitrary cut off of 0.2 MeV for how much energy the Veto
-            // should get if hit is a photon (theoretically should be 0)
-            if (candidate.VetoEnergy < .2)
+            // Filter 2: check if Candidate is a photon (should be uncharged)
+            if (Compton::IsParticleCharged(candidate.VetoEnergy) == false)
             {
                 h_MissingMass01->Fill(pr_mass);
                 h_MissingMass11->Fill(pr_mass,weight);
             }
+
+            // Opening angle
+
+            double open_ang = recoil_pr_vec.Angle(scattered_ph_vec);
+            h_OpeningAngle->Fill(180*open_ang/M_PI);
+
 
         }
         // Filter 3: check if there were two particles
@@ -248,6 +304,7 @@ void Compton::ProcessEvent(const TEvent& event, manager_t&)
                 h_MissingMass112->Fill(pr_mass,weight);
             }
 
+            // Closer missing mass
             double front_energy =
                     event.Reconstructed().Candidates.front().CaloEnergy;
             double back_energy =
@@ -276,6 +333,64 @@ void Compton::ProcessEvent(const TEvent& event, manager_t&)
                 h_MissingMass1021->Fill(pr_mass,weight);
             }
             else { continue; }
+
+            // Coplanar filter
+            double front_phi = event.Reconstructed().Candidates.front().Phi;
+            double back_phi = event.Reconstructed().Candidates.back().Phi;
+
+            double diff;
+
+            if (front_phi > back_phi)
+            {
+                diff = front_phi - back_phi;
+            }
+            if (back_phi > front_phi)
+            {
+                diff = back_phi - front_phi;
+            }
+
+            // plus or minus 10 degrees from 180
+            if (((180*diff/M_PI) > 170) & ((180*diff/M_PI) < 190))
+            {
+                scattered_ph_vec = LorentzVec(vec3(event.Reconstructed().
+                                                   Candidates.front()),
+                                                   front_energy);
+                recoil_pr_vec = incoming_ph_vec + target_vec - scattered_ph_vec;
+                pr_mass = recoil_pr_vec.M();
+                h_MissingMass00201->Fill(pr_mass);
+                h_MissingMass10201->Fill(pr_mass,weight);
+
+                // Veto filter
+                if ((front_veto == false) & (back_veto == true))
+                {
+                    // Doing all this again
+                    scattered_ph_vec = LorentzVec(vec3(event.Reconstructed().
+                                                  Candidates.front()),
+                                                  event.Reconstructed().Candidates.
+                                                  front().CaloEnergy);
+                    recoil_pr_vec = incoming_ph_vec + target_vec - scattered_ph_vec;
+                    pr_mass = recoil_pr_vec.M();
+                    h_MissingMass01201->Fill(pr_mass);
+                    h_MissingMass11201->Fill(pr_mass,weight);
+
+                }
+                if ((front_veto == true) & (back_veto == false))
+                {
+                    // Doing all this again
+                    scattered_ph_vec = LorentzVec(vec3(event.Reconstructed().
+                                                  Candidates.back()),
+                                                  event.Reconstructed().Candidates.
+                                                  back().CaloEnergy);
+                    recoil_pr_vec = incoming_ph_vec + target_vec - scattered_ph_vec;
+                    pr_mass = recoil_pr_vec.M();
+                    h_MissingMass01201->Fill(pr_mass);
+                    h_MissingMass11201->Fill(pr_mass,weight);
+
+                    // Closer missing mass filter
+
+
+            }
+
         }
 
         if (event.Reconstructed().Candidates.size() == 1)
@@ -292,7 +407,7 @@ void Compton::ProcessEvent(const TEvent& event, manager_t&)
                 h_MissingMass001->Fill(pr_mass);
                 h_MissingMass101->Fill(pr_mass,weight);
 
-                if (candidate.VetoEnergy < .2)
+                if (Compton::IsParticleCharged(candidate.VetoEnergy) == false)
                 {
                     // 1 particle, with Veto, with and without weights
                     h_MissingMass011->Fill(pr_mass);
@@ -301,6 +416,7 @@ void Compton::ProcessEvent(const TEvent& event, manager_t&)
             }
         }
     }
+
 }
 
 
@@ -318,6 +434,7 @@ void Compton::ShowResult()
             << h_MissingMass01
             << h_MissingMass11
             << endc;
+
     ant::canvas(GetName()+": Missing Mass Plots 2, incoming photon energy range: "
                           )
             << h_MissingMass001
@@ -330,6 +447,22 @@ void Compton::ShowResult()
             << h_MissingMass112
             << h_MissingMass0021
             << h_MissingMass1021
+            << endc;
+
+    ant::canvas(GetName()+": Coplanar Missing Mass Plots, incoming photon energy range: "
+                          )
+            << h_MissingMass00201
+            << h_MissingMass10201
+            << h_MissingMass01201
+            << h_MissingMass11201
+            << h_MissingMass00211
+            << h_MissingMass10211
+            << endc;
+
+    ant::canvas(GetName()+": Coplaner and Opening Angle, incoming photon energy range: "
+                          )
+            << h_CoplanarAngle
+            << h_OpeningAngle
             << endc;
 }
 
