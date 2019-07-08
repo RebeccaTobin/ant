@@ -157,11 +157,64 @@ Compton::Compton(const string& name, OptionsPtr opts) :
 bool Compton::IsParticleCharged(double veto_energy)
 {
     if (veto_energy < .2) { return false; }
-    if (veto_energy > .2) { return true; }
+    else { return true; }
+}
+
+// Checks if two particles are a photon and proton
+// based on their veto energy. Returns 0 is they are
+// not, returns the energy of the photon if they are
+int Compton::IsPhotonProton(TCandidateList candidates)
+{
+    bool is1charged = true;
+    bool is2charged = true;
+
+    if (candidates.front().VetoEnergy < .2)
+    {
+        is1charged = false;
+    }
+
+    if (candidates.back().VetoEnergy < .2)
+    {
+        is2charged = false;
+    }
+
+    if ((is1charged == false) & (is2charged == true))
+    {
+        return candidates.front();
+    }
+    else if ((is1charged == true) & (is2charged == false))
+    {
+        return candidates.back();
+    }
+
+    else { return 0; }
+}
+
+// Input: a candidate and the 4 momentum vectors the the
+// incoming photon and proton target. Output: the missing
+// mass
+double GetMissingMass(const TCandidate candidate,
+                 LorentzVec target_vec, LorentzVec incoming_ph_vec)
+{
+    LorentzVec scattered_ph_vec;
+    LorentzVec recoil_pr_vec;
+
+    // Momentum 4 vector for scattered photon
+    scattered_ph_vec = LorentzVec(vec3(candidate),
+                                  candidate.CaloEnergy);
+    // Calculating the momentum 4 vector for the possible
+    // recoil proton
+    recoil_pr_vec = incoming_ph_vec + target_vec - scattered_ph_vec;
+    // Calculating the mass of the recoil proton from
+    // the 4 momentum vector using .M()
+    // Should be 938MeV if there was a Compton
+    // event involving these 2 photons
+    return recoil_pr_vec.M();
 }
 
 void Compton::ProcessEvent(const TEvent& event, manager_t&)
 {
+
     // Runs ProcessEvent function in TriggerSimulation file which
     // does the calculations
     triggersimu.ProcessEvent(event);
@@ -186,7 +239,7 @@ void Compton::ProcessEvent(const TEvent& event, manager_t&)
         // and recoil proton
         LorentzVec scattered_ph_vec;
         LorentzVec recoil_pr_vec;
-        double pr_mass;
+        double missing_mass;
 
         // Apply trigger simulation to tagger hits
         // This subtracts a weighted time from the CB (see wiki)
@@ -211,24 +264,12 @@ void Compton::ProcessEvent(const TEvent& event, manager_t&)
 
         for (const auto& candidate : event.Reconstructed().Candidates) {
 
-            // Momentum 4 vector for scattered photon
-            scattered_ph_vec = LorentzVec(vec3(candidate),
-                                          candidate.CaloEnergy);
-            // Calculating the momentum 4 vector for the possible
-            // recoil proton
-            recoil_pr_vec = incoming_ph_vec + target_vec - scattered_ph_vec;
-            // Calculating the mass of the recoil proton from
-            // the momentum vector using .M()
-            // Should be 938MeV if there was a Compton
-            // event involving these 2 photons
-            pr_mass = recoil_pr_vec.M();
+            missing_mass = GetMissingMass(candidate, target_vec,incoming_ph_vec);
 
-            // No filter
-            h_MissingMass->Fill(pr_mass);
-            // Filter 1: weights
-            h_MissingMass1->Fill(pr_mass,weight);
+            h_MissingMass->Fill(missing_mass);
+            h_MissingMass1->Fill(missing_mass,weight);
 
-            // Filter 2: check if Candidate is a photon (should be uncharged)
+            // Filter 2: check if Candidate is uncharged (could it be a photon?)
             if (Compton::IsParticleCharged(candidate.VetoEnergy) == false)
             {
                 h_MissingMass01->Fill(pr_mass);
@@ -236,7 +277,6 @@ void Compton::ProcessEvent(const TEvent& event, manager_t&)
             }
 
             // Opening angle
-
             double open_ang = recoil_pr_vec.Angle(scattered_ph_vec);
             h_OpeningAngle->Fill(180*open_ang/M_PI);
 
@@ -261,37 +301,18 @@ void Compton::ProcessEvent(const TEvent& event, manager_t&)
 
             }
 
-            // Looking for Candidates where one particle
-            // is charged and the other one isn't, then
-            // only using the uncharged particle (presumably
-            // a photon) to calculated and plot missing mass
-            bool front_veto = true;
-            bool back_veto = true;
+            photon_energy = IsPhotonProton(event.Reconstructed().Candidates)
 
-            if (event.Reconstructed().Candidates.front().VetoEnergy < .2)
+            if (photon_energy != 0)
             {
-                front_veto = false;
-            }
-
-            if (event.Reconstructed().Candidates.back().VetoEnergy < .2)
-            {
-                back_veto = false;
-            }
-
-            if ((front_veto == false) & (back_veto == true))
-            {
-                // Doing all this again
-                scattered_ph_vec = LorentzVec(vec3(event.Reconstructed().
-                                              Candidates.front()),
-                                              event.Reconstructed().Candidates.
-                                              front().CaloEnergy);
-                recoil_pr_vec = incoming_ph_vec + target_vec - scattered_ph_vec;
-                pr_mass = recoil_pr_vec.M();
-                h_MissingMass012->Fill(pr_mass);
-                h_MissingMass112->Fill(pr_mass,weight);
+                missing_mass = GetMissingMass(Candidates.front(),
+                                              target_vec,incoming_ph_vec);
+                h_MissingMass012->Fill(missing_mass);
+                h_MissingMass112->Fill(missing_mass,weight);
 
             }
-            if ((front_veto == true) & (back_veto == false))
+            if (IsPhotonProton(event.Reconstructed().Candidates.front().VetoEnergy
+                               ,event.Reconstructed().Candidates.back().VetoEnergy) == 2)
             {
                 // Doing all this again
                 scattered_ph_vec = LorentzVec(vec3(event.Reconstructed().
@@ -361,7 +382,8 @@ void Compton::ProcessEvent(const TEvent& event, manager_t&)
                 h_MissingMass10201->Fill(pr_mass,weight);
 
                 // Veto filter
-                if ((front_veto == false) & (back_veto == true))
+                if (IsPhotonProton(event.Reconstructed().Candidates.front().VetoEnergy
+                                   ,event.Reconstructed().Candidates.back().VetoEnergy) == 1)
                 {
                     // Doing all this again
                     scattered_ph_vec = LorentzVec(vec3(event.Reconstructed().
@@ -374,7 +396,8 @@ void Compton::ProcessEvent(const TEvent& event, manager_t&)
                     h_MissingMass11201->Fill(pr_mass,weight);
 
                 }
-                if ((front_veto == true) & (back_veto == false))
+                if (IsPhotonProton(event.Reconstructed().Candidates.front().VetoEnergy
+                                   ,event.Reconstructed().Candidates.back().VetoEnergy) == 2)
                 {
                     // Doing all this again
                     scattered_ph_vec = LorentzVec(vec3(event.Reconstructed().
@@ -388,9 +411,8 @@ void Compton::ProcessEvent(const TEvent& event, manager_t&)
 
                     // Closer missing mass filter
 
-
+                }
             }
-
         }
 
         if (event.Reconstructed().Candidates.size() == 1)
@@ -409,14 +431,13 @@ void Compton::ProcessEvent(const TEvent& event, manager_t&)
 
                 if (Compton::IsParticleCharged(candidate.VetoEnergy) == false)
                 {
-                    // 1 particle, with Veto, with and without weights
+                    // 1 uncharged particle with and without weights
                     h_MissingMass011->Fill(pr_mass);
                     h_MissingMass111->Fill(pr_mass,weight);
                 }
             }
         }
     }
-
 }
 
 

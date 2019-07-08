@@ -36,6 +36,12 @@ public:
 
     bool IsParticleCharged(double veto_energy);
 
+    int IsPhotonProton(TCandidateList candidates);
+
+    double GetMissingMass(TCandidatePtr candidate,
+                     LorentzVec target_vec, LorentzVec incoming_ph_vec);
+
+
 
 private:
     // TH1 is a root command for making histograms. The D at the
@@ -74,6 +80,8 @@ private:
     // Options in command line
     double tagger_energy_low;     // in MeV
     double tagger_energy_high;
+
+    TCandidatePtr photon;
 
 };
 
