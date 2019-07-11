@@ -12,9 +12,9 @@ Compton::Compton(const string& name, OptionsPtr opts) :
     // Histograms are created here but not filled
 
     const BinSettings time_bins(2000, -200, 200);
-    BinSettings mass_bins(1000, 700, 1100);
+    BinSettings mass_bins(200, 700, 1100);
     const BinSettings angle_bins1(60 , 120 , 240);
-    const BinSettings angle_bins2(90 , 0 , 180);
+    const BinSettings angle_bins2(90 , 0 , 360);
 
     h_PromptRandomWithTriggerSimulation = HistFac.makeTH1D("PromptRandom with TriggerSimulation",
                                     "t [ns]","#",
@@ -147,11 +147,16 @@ Compton::Compton(const string& name, OptionsPtr opts) :
     // Variables that can be modified at
     // the command line
     tagger_energy_low = 0;
-    tagger_energy_high = 1000;
+    tagger_energy_high = 2000;
     if (opts->HasOption("low"))
         tagger_energy_low = opts->Get<double>("low", 0);
     if (opts->HasOption("high"))
         tagger_energy_high = opts->Get<double>("high", 1000);
+
+    if (proton_mass == ParticleTypeDatabase::Proton.Mass())
+    {
+        cout << "good" << endl;
+    }
 
 }
 // Checks if veto_energy meets threshold for particle
@@ -171,6 +176,7 @@ int Compton::IsPhotonProton(const TCandidateList& candidates)
 {
     bool isfrontcharged = true;
     bool isbackcharged = true;
+
     // Will stay a null pointer if TCandidatePtrList
     // inputed is not a photon and proton. Otherwise,
     // will be assigned the photon candidate
@@ -215,17 +221,20 @@ int Compton::IsPhotonProton(const TCandidateList& candidates)
 double Compton::GetMissingMass(const TCandidate& candidate,
                  LorentzVec target, LorentzVec incoming_ph)
 {
+    LorentzVec scattered_ph;
+    LorentzVec recoil_pr;
+
     // Momentum 4 vector for scattered photon
-    scattered_ph_vec = LorentzVec(vec3(candidate),
+    scattered_ph = LorentzVec(vec3(candidate),
                                   candidate.CaloEnergy);
     // Calculating the momentum 4 vector for the possible
     // recoil proton
-    recoil_pr_vec = incoming_ph + target - scattered_ph_vec;
+    recoil_pr = incoming_ph + target - scattered_ph;
     // Calculating the mass of the recoil proton from
     // the 4 momentum vector using .M()
     // Should be 938MeV if there was a Compton
     // event involving these 2 photons
-    return recoil_pr_vec.M();
+    return recoil_pr.M();
 }
 
 double Compton::GetCloserMM
@@ -327,7 +336,7 @@ void Compton::ProcessEvent(const TEvent& event, manager_t&)
         h_PromptRandomWithTriggerSimulation->Fill(taggerhit.Time, weight);
 
         // Calculating the momentum 4 vec for the incoming photon
-        incoming_ph_vec = LorentzVec ({0,0,taggerhit.PhotonEnergy},
+        incoming_ph_vec = LorentzVec({0,0,taggerhit.PhotonEnergy},
                                       taggerhit.PhotonEnergy);
 
         // Events with all numbers of particles. Looping over the
@@ -410,16 +419,16 @@ void Compton::ProcessEvent(const TEvent& event, manager_t&)
                 {
                     missing_mass = GetMissingMass(candidates.front(),
                                                   target_vec, incoming_ph_vec);
-                    h_MissingMass012->Fill(missing_mass);
-                    h_MissingMass112->Fill(missing_mass,weight);
+                    h_MissingMass01201->Fill(missing_mass);
+                    h_MissingMass11201->Fill(missing_mass,weight);
                 }
 
                 if (IsPhotonProton(candidates) == 2)
                 {
                     missing_mass = GetMissingMass(candidates.back(),
                                                   target_vec, incoming_ph_vec);
-                    h_MissingMass012->Fill(missing_mass);
-                    h_MissingMass112->Fill(missing_mass,weight);
+                    h_MissingMass01201->Fill(missing_mass);
+                    h_MissingMass11201->Fill(missing_mass,weight);
                 }
 
                 // Closer missing mass filter
@@ -429,6 +438,17 @@ void Compton::ProcessEvent(const TEvent& event, manager_t&)
                 h_MissingMass00211->Fill(closer_missing_mass);
                 h_MissingMass10211->Fill(closer_missing_mass,weight);
             }
+
+            // Opening Angle Filter
+            LorentzVec front_vec;
+            LorentzVec back_vec;
+
+            front_vec = LorentzVec(vec3(candidates.front()),
+                                   candidates.front().CaloEnergy);
+            back_vec = LorentzVec(vec3(candidates.back()),
+                                   candidates.back().CaloEnergy);
+            open_ang = front_vec.Angle(back_vec);
+            h_OpeningAngle->Fill(180*open_ang/M_PI);
         }
 
         if (event.Reconstructed().Candidates.size() == 1)

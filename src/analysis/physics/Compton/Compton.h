@@ -47,7 +47,6 @@ public:
 
     bool IsCoplanar(const TCandidateList& candidates);
 
-    TCandidatePtr candidate_photon;
     double open_ang;
     double missing_mass;
     double closer_missing_mass;
@@ -100,12 +99,11 @@ private:
     double tagger_energy_low;     // in MeV
     double tagger_energy_high;
 
+    const double proton_mass = ParticleTypeDatabase::Proton.Mass();
+
     // Momentum 4 vector for target (i.e. stationary proton)
     const LorentzVec target_vec = LorentzVec({0,0,0},
                      proton_mass);
-
-    const double proton_mass = ParticleTypeDatabase::Proton.Mass();
-
 };
 
 }}}
