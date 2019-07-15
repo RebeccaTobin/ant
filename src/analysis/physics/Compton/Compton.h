@@ -69,7 +69,6 @@ private:
     //TH1D* h_TaggerCBSubtaction;
     TH1D* h_PromptRandomWithTriggerSimulation;
     TH1D* h_MissingMass;
-    TH1D* h_MissingMassDiff;
     TH1D* h_MissingMass1;
     TH1D* h_MissingMass01;
     TH1D* h_MissingMass11;
@@ -89,17 +88,13 @@ private:
     TH1D* h_MissingMass11201;
     TH1D* h_MissingMass00211;
     TH1D* h_MissingMass10211;
-    TH1D* h_OpeningAngle;
-    TH1D* h_Theta;
-    TH1D* h_ScatteredMass;
-    TH1D* h_ScatteredMass2;
 
     PromptRandom::Switch promptrandom;
     utils::TriggerSimulation triggersimu;
 
     // Default values for option at the command line
-    double tagger_energy_low;     // in MeV
-    double tagger_energy_high;
+    double tagger_energy_low = 0;     // in MeV
+    double tagger_energy_high = 2000;
     std::string promptrandom_windows = "-200,7,9,19,21,200";   // in ns
 
     const double proton_mass = ParticleTypeDatabase::Proton.Mass();
@@ -107,6 +102,8 @@ private:
     // Momentum 4 vector for target (i.e. stationary proton)
     const LorentzVec target_vec = LorentzVec({0.0,0.0,0.0},
                      proton_mass);
+
+    double opening_angle_limit;
 };
 
 }}}

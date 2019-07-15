@@ -12,10 +12,7 @@ Compton::Compton(const string& name, OptionsPtr opts) :
     // Histograms are created here but not filled
 
     const BinSettings time_bins(2000, -200, 200);
-    const BinSettings mass_bins(500, 700, 1700);
-    const BinSettings mass_bins2(500, -20, 2000);
-    const BinSettings angle_bins(100 , 0 , 200);
-    const BinSettings energy_bins(200 , 0 , 1000);
+    const BinSettings mass_bins(400, 700, 1500);
 
     h_PromptRandomWithTriggerSimulation = HistFac.makeTH1D("PromptRandom with "
                                     "TriggerSimulation",
@@ -27,11 +24,6 @@ Compton::Compton(const string& name, OptionsPtr opts) :
                                      "mass [MeV/c^2]","#",
                                      mass_bins,
                                      "h_MissingMass"
-                                     );
-    h_MissingMassDiff = HistFac.makeTH1D("All Taggerhits, all Candidates, Different LorentzVec",
-                                     "mass [MeV/c^2]","#",
-                                     mass_bins,
-                                     "h_MissingMassDiff"
                                      );
     h_MissingMass1 = HistFac.makeTH1D("Weighted Taggerhits, all Candidates",
                                      "mass [MeV/c^2]","#",
@@ -139,28 +131,6 @@ Compton::Compton(const string& name, OptionsPtr opts) :
                                      "h_MissingMass10211"
                                      );
 
-    h_ScatteredMass = HistFac.makeTH1D("Scattered Photon Mass",
-                                     "mass [MeV/c^2]","#",
-                                     mass_bins2,
-                                     "h_ScatteredMass"
-                                     );
-    h_ScatteredMass2 = HistFac.makeTH1D("Scattered Photon Mass 2",
-                                     "mass [MeV/c^2]","#",
-                                     mass_bins2,
-                                     "h_ScatteredMass2"
-                                     );
-
-    h_OpeningAngle = HistFac.makeTH1D("Opening Angle",
-                                     "anlge [degrees]","#",
-                                     angle_bins,
-                                     "h_OpeningAngle"
-                                     );
-    h_Theta = HistFac.makeTH1D("Theta",
-                               "anlge [degrees]","#",
-                               angle_bins,
-                               "h_Theta"
-                               );
-
     // Get variable at command line. The prompt random windows
     // can be specified.
     if (opts->HasOption("PR"))
@@ -170,12 +140,14 @@ Compton::Compton(const string& name, OptionsPtr opts) :
 
     vector<double> doubles;
     doubles.reserve(PR_string_vec.size());
-    transform(PR_string_vec.begin(), PR_string_vec.end(), back_inserter(doubles), [] (const string& s) { return stod(s); });
+    transform(PR_string_vec.begin(),
+              PR_string_vec.end(), back_inserter(doubles),
+              [] (const string& s) { return stod(s); });
 
     // Prompt and random windows. Must be selected based on
     // tagger time plots.
     promptrandom.AddRandomRange
-            ({ stod(PR_string_vec.at(0)), stod(PR_string_vec.at(1)) }); // in nanoseconds
+            ({ stod(PR_string_vec.at(0)), stod(PR_string_vec.at(1)) });
     promptrandom.AddPromptRange
             ({ stod(PR_string_vec.at(2)), stod(PR_string_vec.at(3)) });
     promptrandom.AddRandomRange
@@ -183,8 +155,6 @@ Compton::Compton(const string& name, OptionsPtr opts) :
 
     // Get variables at command line. The range of taggerhit energies
     // that one would like to use can be specified
-    tagger_energy_low = 0;
-    tagger_energy_high = 2000;
     if (opts->HasOption("low"))
         tagger_energy_low = opts->Get<double>("low", 0);
     if (opts->HasOption("high"))
@@ -253,24 +223,11 @@ int Compton::IsPhotonProton(const TCandidateList& candidates)
 double Compton::GetMissingMass(const TCandidate& candidate,
                  LorentzVec target, LorentzVec incoming)
 {
-    LorentzVec scattered = LorentzVec(vec3(candidate),candidate.CaloEnergy);
-
-    const TParticle target_particle(ParticleTypeDatabase::Proton,target);
-    const TParticle incoming_particle(ParticleTypeDatabase::Photon,incoming);
-    const TParticle scattered_particle(ParticleTypeDatabase::Photon,scattered);
-
-    // Calculating the mass of the recoil proton from
-    // the 4 momentum vector using .M()
-    // Should be 938MeV if there was a Compton
-    // event involving these 2 photons
-    return (incoming_particle + target_particle - scattered_particle).M();
-}
-
-double Compton::GetMissingMass2(const TCandidate& candidate,
-                 LorentzVec target, LorentzVec incoming)
-{
     vec3 unit_vec = vec3(candidate);
-    LorentzVec scattered = LorentzVec({unit_vec.x*candidate.CaloEnergy,unit_vec.y*candidate.CaloEnergy,unit_vec.z*candidate.CaloEnergy},candidate.CaloEnergy);
+    LorentzVec scattered = LorentzVec({unit_vec.x*candidate.CaloEnergy,
+                                       unit_vec.y*candidate.CaloEnergy,
+                                       unit_vec.z*candidate.CaloEnergy},
+                                      candidate.CaloEnergy);
 
     // Calculating the mass of the recoil proton from
     // the 4 momentum vector using .M()
@@ -351,7 +308,8 @@ void Compton::ProcessEvent(const TEvent& event, manager_t&)
     {
 
         // Skipping taggerhits outside the specified energy range
-        if ((taggerhit.PhotonEnergy < tagger_energy_low) || (taggerhit.PhotonEnergy > tagger_energy_high))
+        if ((taggerhit.PhotonEnergy < tagger_energy_low) ||
+                (taggerhit.PhotonEnergy > tagger_energy_high))
         {
             continue;
         }
@@ -387,7 +345,6 @@ void Compton::ProcessEvent(const TEvent& event, manager_t&)
             missing_mass = GetMissingMass(candidate, target_vec, incoming_vec);
 
             h_MissingMass->Fill(missing_mass);
-            h_MissingMassDiff->Fill(GetMissingMass2(candidate, target_vec, incoming_vec));
             h_MissingMass1->Fill(missing_mass, weight);
 
             // Filter 2: Veto
@@ -397,22 +354,12 @@ void Compton::ProcessEvent(const TEvent& event, manager_t&)
                 h_MissingMass11->Fill(missing_mass, weight);
             }
 
-            //LorentzVec scattered = LorentzVec(vec3(candidate),candidate.CaloEnergy);
-            vec3 unit_vec = vec3(candidate);
-            LorentzVec scattered = LorentzVec({unit_vec.x*candidate.CaloEnergy,unit_vec.y*candidate.CaloEnergy,unit_vec.z*candidate.CaloEnergy},candidate.CaloEnergy);
-            h_ScatteredMass->Fill(scattered.M());
-
-            const TParticle scattered_particle(ParticleTypeDatabase::Photon,scattered);
-            h_ScatteredMass2->Fill(scattered_particle.M());
-
-
         }
         // Filter 3: check if there were two particles
         // present in the event
         if (event.Reconstructed().Candidates.size() == 2)
         {
             const auto& candidates = event.Reconstructed().Candidates;
-            //const auto& candidates_ptr = *candidates;
 
             // Using both candidates to calc missing mass
             for (const auto& candidate : candidates)
@@ -422,8 +369,6 @@ void Compton::ProcessEvent(const TEvent& event, manager_t&)
                 // 2 particles in event, with and without weights
                 h_MissingMass002->Fill(missing_mass);
                 h_MissingMass102->Fill(missing_mass, weight);
-
-                h_Theta->Fill(180*candidate.Theta/M_PI);
             }
 
             // Plotting only if one is a photon and one is a proton. Only
@@ -485,25 +430,6 @@ void Compton::ProcessEvent(const TEvent& event, manager_t&)
                 h_MissingMass00211->Fill(closer_missing_mass);
                 h_MissingMass10211->Fill(closer_missing_mass, weight);
             }
-
-            // Opening Angle Filter
-            LorentzVec front_scattered;
-            LorentzVec front_missing;
-            LorentzVec back_scattered;
-            LorentzVec back_missing;
-
-            front_scattered = LorentzVec(vec3(candidates.front()),
-                                   candidates.front().CaloEnergy);
-            front_missing = incoming_vec + target_vec - front_scattered;
-
-            back_scattered = LorentzVec(vec3(candidates.back()),
-                                   candidates.back().CaloEnergy);
-            back_missing = incoming_vec + target_vec - back_scattered;
-
-            open_ang = front_scattered.Angle(back_missing);
-            h_OpeningAngle->Fill(180*open_ang/M_PI);
-            open_ang = back_scattered.Angle(front_missing);
-            h_OpeningAngle->Fill(180*open_ang/M_PI);
         }
 
         if (event.Reconstructed().Candidates.size() == 1)
@@ -535,17 +461,19 @@ void Compton::ShowResult()
 
     ant::canvas(GetName()+": Missing Mass Plots")
             << h_MissingMass
-            << h_MissingMassDiff
             << h_MissingMass1
             << h_MissingMass01
             << h_MissingMass11
             << endc;
 
-    ant::canvas(GetName()+": 1 and 2 Particle Events")
+    ant::canvas(GetName()+": 1 Particle Events")
             << h_MissingMass001
             << h_MissingMass101
             << h_MissingMass011
             << h_MissingMass111
+            << endc;
+
+    ant::canvas(GetName()+": 2 Particle Events")
             << h_MissingMass002
             << h_MissingMass102
             << h_MissingMass012
@@ -561,15 +489,6 @@ void Compton::ShowResult()
             << h_MissingMass11201
             << h_MissingMass00211
             << h_MissingMass10211
-            << endc;
-
-    ant::canvas(GetName()+": Angle Plots")
-            << h_OpeningAngle
-            << endc;
-
-    ant::canvas(GetName()+": Diagnostics")
-            << h_ScatteredMass
-            << h_ScatteredMass2
             << endc;
 }
 
