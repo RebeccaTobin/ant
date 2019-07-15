@@ -6,6 +6,7 @@
 // To subtact out random tagger hits
 #include "plot/PromptRandomHist.h"
 #include "utils/TriggerSimulation.h"
+// To get stuff at the command line
 #include "base/Logger.h"
 
 // A heirarchy of namespaces which generally resembles the
@@ -42,6 +43,9 @@ public:
     double GetMissingMass(const TCandidate& candidate,
                      LorentzVec target, LorentzVec incoming_ph);
 
+    double GetMissingMass2(const TCandidate& candidate,
+                     LorentzVec target, LorentzVec incoming_ph);
+
     double GetCloserMM
     (const TCandidateList& candidates, const LorentzVec target, LorentzVec incoming_ph);
 
@@ -51,14 +55,9 @@ public:
     double missing_mass;
     double closer_missing_mass;
 
-    // Decleration of momentum 4 vector for scattered photon
-    // and recoil proton
-    LorentzVec scattered_ph_vec;
-    LorentzVec recoil_pr_vec;
-
     // Momentum 4 vector for incoming photon.
     // Note: momentum only in the z-direction
-    LorentzVec incoming_ph_vec;
+    LorentzVec incoming_vec;
 
 private:
     // TH1 is a root command for making histograms. The D at the
@@ -70,6 +69,7 @@ private:
     //TH1D* h_TaggerCBSubtaction;
     TH1D* h_PromptRandomWithTriggerSimulation;
     TH1D* h_MissingMass;
+    TH1D* h_MissingMassDiff;
     TH1D* h_MissingMass1;
     TH1D* h_MissingMass01;
     TH1D* h_MissingMass11;
@@ -89,20 +89,23 @@ private:
     TH1D* h_MissingMass11201;
     TH1D* h_MissingMass00211;
     TH1D* h_MissingMass10211;
-    TH1D* h_CoplanarAngle;
     TH1D* h_OpeningAngle;
+    TH1D* h_Theta;
+    TH1D* h_ScatteredMass;
+    TH1D* h_ScatteredMass2;
 
     PromptRandom::Switch promptrandom;
     utils::TriggerSimulation triggersimu;
 
-    // Options in command line
+    // Default values for option at the command line
     double tagger_energy_low;     // in MeV
     double tagger_energy_high;
+    std::string promptrandom_windows = "-200,7,9,19,21,200";   // in ns
 
     const double proton_mass = ParticleTypeDatabase::Proton.Mass();
 
     // Momentum 4 vector for target (i.e. stationary proton)
-    const LorentzVec target_vec = LorentzVec({0,0,0},
+    const LorentzVec target_vec = LorentzVec({0.0,0.0,0.0},
                      proton_mass);
 };
 
