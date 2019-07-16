@@ -41,17 +41,16 @@ public:
     int IsPhotonProton(const TCandidateList& candidates);
 
     double GetMissingMass(const TCandidate& candidate,
-                     LorentzVec target, LorentzVec incoming_ph);
-
-    double GetMissingMass2(const TCandidate& candidate,
-                     LorentzVec target, LorentzVec incoming_ph);
+                     const LorentzVec target, const LorentzVec incoming);
 
     double GetCloserMM
-    (const TCandidateList& candidates, const LorentzVec target, LorentzVec incoming_ph);
+    (const TCandidateList& candidates, const LorentzVec target, const LorentzVec incoming);
 
     bool IsCoplanar(const TCandidateList& candidates);
 
-    double open_ang;
+    double GetOpeningAngle
+    (const TCandidateList& candidates, const LorentzVec target, const LorentzVec incoming);
+
     double missing_mass;
     double closer_missing_mass;
 
@@ -119,7 +118,7 @@ private:
     const LorentzVec target_vec = LorentzVec({0.0,0.0,0.0},
                      proton_mass);
 
-    double opening_angle_limit;
+    double opening_angle_limit = 15.0;
 };
 
 }}}
