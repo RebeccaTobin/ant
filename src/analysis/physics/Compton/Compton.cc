@@ -156,18 +156,6 @@ Compton::Compton(const string& name, OptionsPtr opts) :
                                      mass_bins,
                                      "h_MissingMass112001"
                                      );
-    h_MissingMass002101 = HistFac.makeTH1D("All Taggerhits, 2 particles, open_ang < 15, "
-                                     "closer missing mass",
-                                     "mass [MeV/c^2]","#",
-                                     mass_bins,
-                                     "h_MissingMass002101"
-                                     );
-    h_MissingMass102101 = HistFac.makeTH1D("Weighted Taggerhits, 2 particles, open_ang < 15, "
-                                     "closer missing mass",
-                                     "mass [MeV/c^2]","#",
-                                     mass_bins,
-                                     "h_MissingMass102101"
-                                     );
     h_MissingMass002011 = HistFac.makeTH1D("All Taggerhits, 2 particles, open_ang < 15, "
                                      "coplanar",
                                      "mass [MeV/c^2]","#",
@@ -191,18 +179,6 @@ Compton::Compton(const string& name, OptionsPtr opts) :
                                      "mass [MeV/c^2]","#",
                                      mass_bins,
                                      "h_MissingMass112011"
-                                     );
-    h_MissingMass002111 = HistFac.makeTH1D("All Taggerhits, 2 particles, open_ang < 15, "
-                                     "coplanar, closer missing mass",
-                                     "mass [MeV/c^2]","#",
-                                     mass_bins,
-                                     "h_MissingMass002111"
-                                     );
-    h_MissingMass102111 = HistFac.makeTH1D("Weighted Taggerhits, 2 particles, open_ang < 15, "
-                                     "coplanar, closer missing mass",
-                                     "mass [MeV/c^2]","#",
-                                     mass_bins,
-                                     "h_MissingMass102111"
                                      );
 
 
@@ -373,8 +349,9 @@ bool Compton::IsCoplanar(const TCandidateList& candidates)
     }
 }
 
-double Compton::GetOpeningAngle
-(const TCandidateList& candidates, const LorentzVec target, const LorentzVec incoming)
+int Compton::IsOpeningAngle
+(const TCandidateList& candidates, const LorentzVec target,
+ const LorentzVec incoming, double opening_angle_limit)
 {
     LorentzVec front_scattered;
     LorentzVec front_missing;
@@ -396,12 +373,20 @@ double Compton::GetOpeningAngle
                                 candidates.back().CaloEnergy);
     back_missing = incoming + target - back_scattered;
 
-    double open_ang1 = 180*front_scattered.Angle(back_missing)/M_PI;
-    double open_ang2 = 180*back_scattered.Angle(front_missing)/M_PI;
+    double open_ang2 = 180*front_scattered.Angle(back_missing)/M_PI;
+    double open_ang1 = 180*back_scattered.Angle(front_missing)/M_PI;
 
-    if (open_ang1 < open_ang2) { return open_ang1; }
+    if (open_ang1 < open_ang2)
+    {
+        if (open_ang1 < opening_angle_limit) { return 1; }
+        else { return 0; }
+    }
 
-    else { return open_ang2; }
+    else
+    {
+        if (open_ang2 < opening_angle_limit) { return 2; }
+        else { return 0; }
+    }
 }
 
 void Compton::ProcessEvent(const TEvent& event, manager_t&)
@@ -538,72 +523,72 @@ void Compton::ProcessEvent(const TEvent& event, manager_t&)
             }
 
             // Opening Angle Filter
-            if (GetOpeningAngle(candidates, target_vec, incoming_vec) < opening_angle_limit)
+            if (IsOpeningAngle(candidates, target_vec, incoming_vec, open_ang_limit) == 1 )
             {
-
-                for (const auto& candidate : candidates)
-                {
-                    missing_mass = GetMissingMass
-                            (candidate, target_vec, incoming_vec);
-                    h_MissingMass002001->Fill(missing_mass);
-                    h_MissingMass102001->Fill(missing_mass, weight);
-                }
+                missing_mass = GetMissingMass
+                         (candidates.front(), target_vec, incoming_vec);
+                h_MissingMass002001->Fill(missing_mass);
+                h_MissingMass102001->Fill(missing_mass, weight);
 
                 // Veto filter
-                if (IsPhotonProton(candidates) == 1)
+                if (IsParticleCharged(candidates.front().VetoEnergy) == false)
                 {
-                    missing_mass = GetMissingMass(candidates.front(),
-                                                  target_vec, incoming_vec);
+                    missing_mass = GetMissingMass
+                             (candidates.front(), target_vec, incoming_vec);
                     h_MissingMass012001->Fill(missing_mass);
                     h_MissingMass112001->Fill(missing_mass, weight);
                 }
-                if (IsPhotonProton(candidates) == 2)
-                {
-                    missing_mass = GetMissingMass(candidates.back(),
-                                                  target_vec, incoming_vec);
-                    h_MissingMass012001->Fill(missing_mass);
-                    h_MissingMass112001->Fill(missing_mass,weight);
-                }
-
-                // Closer missing mass filter
-                closer_missing_mass = GetCloserMM
-                        (candidates, target_vec, incoming_vec);
-                h_MissingMass002101->Fill(closer_missing_mass);
-                h_MissingMass102101->Fill(closer_missing_mass, weight);
 
                 // Coplanar filter
                 if (IsCoplanar(candidates) == true )
                 {
-                    for (const auto& candidate : candidates)
-                    {
-                        missing_mass = GetMissingMass
-                                (candidate, target_vec, incoming_vec);
-                        h_MissingMass002011->Fill(missing_mass);
-                        h_MissingMass102011->Fill(missing_mass, weight);
-                    }
+                    missing_mass = GetMissingMass
+                             (candidates.front(), target_vec, incoming_vec);
+                    h_MissingMass002011->Fill(missing_mass);
+                    h_MissingMass102011->Fill(missing_mass, weight);
 
                     // Veto filter
-                    if (IsPhotonProton(candidates) == 1)
+                    if (IsParticleCharged(candidates.front().VetoEnergy) == false)
                     {
-                        missing_mass = GetMissingMass(candidates.front(),
-                                                      target_vec, incoming_vec);
+                        missing_mass = GetMissingMass
+                                 (candidates.front(), target_vec, incoming_vec);
                         h_MissingMass012011->Fill(missing_mass);
                         h_MissingMass112011->Fill(missing_mass, weight);
                     }
+                }
+            }
+            if (IsOpeningAngle(candidates, target_vec, incoming_vec, open_ang_limit) == 2 )
+            {
+                missing_mass = GetMissingMass
+                         (candidates.back(), target_vec, incoming_vec);
+                h_MissingMass002001->Fill(missing_mass);
+                h_MissingMass102001->Fill(missing_mass, weight);
 
-                    if (IsPhotonProton(candidates) == 2)
+                // Veto filter
+                if (IsParticleCharged(candidates.back().VetoEnergy) == false)
+                {
+                    missing_mass = GetMissingMass
+                             (candidates.back(), target_vec, incoming_vec);
+                    h_MissingMass012001->Fill(missing_mass);
+                    h_MissingMass112001->Fill(missing_mass, weight);
+                }
+
+                // Coplanar filter
+                if (IsCoplanar(candidates) == true )
+                {
+                    missing_mass = GetMissingMass
+                             (candidates.back(), target_vec, incoming_vec);
+                    h_MissingMass002011->Fill(missing_mass);
+                    h_MissingMass102011->Fill(missing_mass, weight);
+
+                    // Veto filter
+                    if (IsParticleCharged(candidates.front().VetoEnergy) == false)
                     {
-                        missing_mass = GetMissingMass(candidates.back(),
-                                                      target_vec, incoming_vec);
+                        missing_mass = GetMissingMass
+                                 (candidates.back(), target_vec, incoming_vec);
                         h_MissingMass012011->Fill(missing_mass);
-                        h_MissingMass112011->Fill(missing_mass,weight);
+                        h_MissingMass112011->Fill(missing_mass, weight);
                     }
-
-                    // Closer missing mass filter
-                    closer_missing_mass = GetCloserMM
-                            (candidates, target_vec, incoming_vec);
-                    h_MissingMass002111->Fill(closer_missing_mass);
-                    h_MissingMass102111->Fill(closer_missing_mass, weight);
                 }
             }
         }
@@ -672,16 +657,12 @@ void Compton::ShowResult()
             << h_MissingMass102001
             << h_MissingMass012001
             << h_MissingMass112001
-            << h_MissingMass002101
-            << h_MissingMass102101
             << endc;
     ant::canvas(GetName()+": Missing Mass Plots, Opening Angle < 15 and Coplanar")
             << h_MissingMass002011
             << h_MissingMass102011
             << h_MissingMass012011
             << h_MissingMass112011
-            << h_MissingMass002111
-            << h_MissingMass102111
             << endc;
 }
 

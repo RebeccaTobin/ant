@@ -48,8 +48,9 @@ public:
 
     bool IsCoplanar(const TCandidateList& candidates);
 
-    double GetOpeningAngle
-    (const TCandidateList& candidates, const LorentzVec target, const LorentzVec incoming);
+    int IsOpeningAngle
+    (const TCandidateList& candidates, const LorentzVec target, const LorentzVec incoming,
+     double opening_angle_limit);
 
     double missing_mass;
     double closer_missing_mass;
@@ -96,13 +97,10 @@ private:
     TH1D* h_MissingMass012001;
     TH1D* h_MissingMass112001;
     TH1D* h_MissingMass002101;
-    TH1D* h_MissingMass102101;
     TH1D* h_MissingMass002011;
     TH1D* h_MissingMass102011;
     TH1D* h_MissingMass012011;
     TH1D* h_MissingMass112011;
-    TH1D* h_MissingMass002111;
-    TH1D* h_MissingMass102111;
 
     PromptRandom::Switch promptrandom;
     utils::TriggerSimulation triggersimu;
@@ -118,7 +116,7 @@ private:
     const LorentzVec target_vec = LorentzVec({0.0,0.0,0.0},
                      proton_mass);
 
-    double opening_angle_limit = 15.0;
+    double open_ang_limit = 15.0;
 };
 
 }}}
