@@ -40,6 +40,7 @@ Compton::Compton(const string& name, OptionsPtr opts) :
                                      mass_bins,
                                      "h_MissingMass11"
                                      );
+
     h_MissingMass001 = HistFac.makeTH1D("All Taggerhits, 1 particle event",
                                      "mass [MeV/c^2]","#",
                                      mass_bins,
@@ -60,6 +61,7 @@ Compton::Compton(const string& name, OptionsPtr opts) :
                                      mass_bins,
                                      "h_MissingMass111"
                                      );
+
     h_MissingMass002 = HistFac.makeTH1D("All Taggerhis, 2 particle event",
                                      "mass [MeV/c^2]","#",
                                      mass_bins,
@@ -96,6 +98,7 @@ Compton::Compton(const string& name, OptionsPtr opts) :
                                      mass_bins,
                                      "h_MissingMass1021"
                                      );
+
     h_MissingMass00201 = HistFac.makeTH1D("All Taggerhits, 2 particle coplanar event",
                                      "mass [MeV/c^2]","#",
                                      mass_bins,
@@ -130,6 +133,78 @@ Compton::Compton(const string& name, OptionsPtr opts) :
                                      mass_bins,
                                      "h_MissingMass10211"
                                      );
+
+    h_MissingMass002001 = HistFac.makeTH1D("All Taggerhits, 2 particles, open_ang < 15",
+                                     "mass [MeV/c^2]","#",
+                                     mass_bins,
+                                     "h_MissingMass002001"
+                                     );
+    h_MissingMass102001 = HistFac.makeTH1D("Weighted Taggerhits, 2 particles, open_ang < 15",
+                                     "mass [MeV/c^2]","#",
+                                     mass_bins,
+                                     "h_MissingMass102001"
+                                     );
+    h_MissingMass012001 = HistFac.makeTH1D("All Taggerhits, 2 particles, open_ang < 15, "
+                                     "no veto",
+                                     "mass [MeV/c^2]","#",
+                                     mass_bins,
+                                     "h_MissingMass012001"
+                                     );
+    h_MissingMass112001 = HistFac.makeTH1D("Weighted Taggerhits, 2 particles, open_ang < 15, "
+                                     "no veto",
+                                     "mass [MeV/c^2]","#",
+                                     mass_bins,
+                                     "h_MissingMass112001"
+                                     );
+    h_MissingMass002101 = HistFac.makeTH1D("All Taggerhits, 2 particles, open_ang < 15, "
+                                     "closer missing mass",
+                                     "mass [MeV/c^2]","#",
+                                     mass_bins,
+                                     "h_MissingMass002101"
+                                     );
+    h_MissingMass102101 = HistFac.makeTH1D("Weighted Taggerhits, 2 particles, open_ang < 15, "
+                                     "closer missing mass",
+                                     "mass [MeV/c^2]","#",
+                                     mass_bins,
+                                     "h_MissingMass102101"
+                                     );
+    h_MissingMass002011 = HistFac.makeTH1D("All Taggerhits, 2 particles, open_ang < 15, "
+                                     "coplanar",
+                                     "mass [MeV/c^2]","#",
+                                     mass_bins,
+                                     "h_MissingMass002011"
+                                     );
+    h_MissingMass102011 = HistFac.makeTH1D("Weighted Taggerhits, 2 particles, open_ang < 15, "
+                                     "coplanar",
+                                     "mass [MeV/c^2]","#",
+                                     mass_bins,
+                                     "h_MissingMass102011"
+                                     );
+    h_MissingMass012011 = HistFac.makeTH1D("All Taggerhits, 2 particles, open_ang < 15, "
+                                     "coplanar, no veto",
+                                     "mass [MeV/c^2]","#",
+                                     mass_bins,
+                                     "h_MissingMass012011"
+                                     );
+    h_MissingMass112011 = HistFac.makeTH1D("Weighted Taggerhits, 2 particles, open_ang < 15, "
+                                     "coplanar, no veto",
+                                     "mass [MeV/c^2]","#",
+                                     mass_bins,
+                                     "h_MissingMass112011"
+                                     );
+    h_MissingMass002111 = HistFac.makeTH1D("All Taggerhits, 2 particles, open_ang < 15, "
+                                     "coplanar, closer missing mass",
+                                     "mass [MeV/c^2]","#",
+                                     mass_bins,
+                                     "h_MissingMass002111"
+                                     );
+    h_MissingMass102111 = HistFac.makeTH1D("Weighted Taggerhits, 2 particles, open_ang < 15, "
+                                     "coplanar, closer missing mass",
+                                     "mass [MeV/c^2]","#",
+                                     mass_bins,
+                                     "h_MissingMass102111"
+                                     );
+
 
     // Get variable at command line. The prompt random windows
     // can be specified.
@@ -489,6 +564,23 @@ void Compton::ShowResult()
             << h_MissingMass11201
             << h_MissingMass00211
             << h_MissingMass10211
+            << endc;
+
+    ant::canvas(GetName()+": Missing Mass Plots, Opening Angle < 15")
+            << h_MissingMass002001
+            << h_MissingMass102001
+            << h_MissingMass012001
+            << h_MissingMass112001
+            << h_MissingMass002101
+            << h_MissingMass102101
+            << endc;
+    ant::canvas(GetName()+": Missing Mass Plots, Opening Angle < 15 and Coplanar")
+            << h_MissingMass002011
+            << h_MissingMass102011
+            << h_MissingMass012011
+            << h_MissingMass112011
+            << h_MissingMass002111
+            << h_MissingMass102111
             << endc;
 }
 

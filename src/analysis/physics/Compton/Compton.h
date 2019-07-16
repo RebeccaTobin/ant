@@ -72,22 +72,38 @@ private:
     TH1D* h_MissingMass1;
     TH1D* h_MissingMass01;
     TH1D* h_MissingMass11;
+
     TH1D* h_MissingMass001;
     TH1D* h_MissingMass101;
     TH1D* h_MissingMass011;
     TH1D* h_MissingMass111;
+
     TH1D* h_MissingMass002;
     TH1D* h_MissingMass102;
     TH1D* h_MissingMass012;
     TH1D* h_MissingMass112;
     TH1D* h_MissingMass0021;
     TH1D* h_MissingMass1021;
+
     TH1D* h_MissingMass00201;
     TH1D* h_MissingMass10201;
     TH1D* h_MissingMass01201;
     TH1D* h_MissingMass11201;
     TH1D* h_MissingMass00211;
     TH1D* h_MissingMass10211;
+
+    TH1D* h_MissingMass002001;
+    TH1D* h_MissingMass102001;
+    TH1D* h_MissingMass012001;
+    TH1D* h_MissingMass112001;
+    TH1D* h_MissingMass002101;
+    TH1D* h_MissingMass102101;
+    TH1D* h_MissingMass002011;
+    TH1D* h_MissingMass102011;
+    TH1D* h_MissingMass012011;
+    TH1D* h_MissingMass112011;
+    TH1D* h_MissingMass002111;
+    TH1D* h_MissingMass102111;
 
     PromptRandom::Switch promptrandom;
     utils::TriggerSimulation triggersimu;
