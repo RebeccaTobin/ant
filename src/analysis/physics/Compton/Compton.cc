@@ -255,7 +255,7 @@ bool Compton::IsCoplanar(const TCandidateList& candidates)
         double front_phi = candidates.front().Phi;
         double back_phi = candidates.back().Phi;
 
-        double diff;
+        double diff = 0.0;
 
         if (front_phi > back_phi)
         {
