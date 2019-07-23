@@ -67,7 +67,7 @@ private:
     //TH1D* h_TaggerandClusterTime;
     //TH1D* h_TaggerTime;
     //TH1D* h_TaggerCBSubtaction;
-    TH1D* h_PromptRandomWithTriggerSimulation;
+    TH1D* h_WeightedTaggerTime;
     TH1D* h_MissingMass;
     TH1D* h_MissingMass1;
     TH1D* h_MissingMass11;

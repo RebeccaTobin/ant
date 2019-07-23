@@ -14,13 +14,12 @@ Compton::Compton(const string& name, OptionsPtr opts) :
     const BinSettings time_bins(2000, -200, 200);
     const BinSettings mass_bins(400, 700, 1500);
 
-    h_PromptRandomWithTriggerSimulation = HistFac.makeTH1D("PromptRandom with "
-                                    "TriggerSimulation",
+    h_WeightedTaggerTime = HistFac.makeTH1D("Weighted Tagger Time",
                                     "t [ns]","#",
                                     time_bins,
-                                    "h_PromptRandomWithTriggerSimulation"
+                                    "h_WeightedTaggerTime"
                                     );
-    h_MissingMass = HistFac.makeTH1D("All Candidates",
+    h_MissingMass = HistFac.makeTH1D("All Candidates, No Weights",
                                      "mass [MeV/c^2]","#",
                                      mass_bins,
                                      "h_MissingMass"
@@ -30,7 +29,7 @@ Compton::Compton(const string& name, OptionsPtr opts) :
                                      mass_bins,
                                      "h_MissingMass1"
                                      );
-    h_MissingMass11 = HistFac.makeTH1D("No Veto",
+    h_MissingMass11 = HistFac.makeTH1D("Uncharged",
                                      "mass [MeV/c^2]","#",
                                      mass_bins,
                                      "h_MissingMass11"
@@ -41,7 +40,7 @@ Compton::Compton(const string& name, OptionsPtr opts) :
                                      mass_bins,
                                      "h_MissingMass101"
                                      );
-    h_MissingMass111 = HistFac.makeTH1D("1 particle, no veto",
+    h_MissingMass111 = HistFac.makeTH1D("1 particle, uncharged",
                                      "mass [MeV/c^2]","#",
                                      mass_bins,
                                      "h_MissingMass111"
@@ -53,7 +52,7 @@ Compton::Compton(const string& name, OptionsPtr opts) :
                                      "h_MissingMass102"
                                      );
     h_MissingMass112 = HistFac.makeTH1D("2 particles, "
-                                     "only one has no veto",
+                                     "one is uncharged",
                                      "mass [MeV/c^2]","#",
                                      mass_bins,
                                      "h_MissingMass112"
@@ -71,13 +70,13 @@ Compton::Compton(const string& name, OptionsPtr opts) :
                                      "h_MissingMass10201"
                                      );
     h_MissingMass11201 = HistFac.makeTH1D("2 particles, coplanar, "
-                                     "no veto",
+                                     "one is uncharged",
                                      "mass [MeV/c^2]","#",
                                      mass_bins,
                                      "h_MissingMass11201"
                                      );
     h_MissingMass10211 = HistFac.makeTH1D("2 particles, coplanar, "
-                                          "closer missing mass",
+                                     "closer missing mass",
                                      "mass [MeV/c^2]","#",
                                      mass_bins,
                                      "h_MissingMass10211"
@@ -89,7 +88,7 @@ Compton::Compton(const string& name, OptionsPtr opts) :
                                      "h_MissingMass102001"
                                      );
     h_MissingMass112001 = HistFac.makeTH1D("2 particles, open_ang < 15, "
-                                     "no veto",
+                                     "one is uncharged",
                                      "mass [MeV/c^2]","#",
                                      mass_bins,
                                      "h_MissingMass112001"
@@ -101,7 +100,7 @@ Compton::Compton(const string& name, OptionsPtr opts) :
                                      "h_MissingMass102011"
                                      );
     h_MissingMass112011 = HistFac.makeTH1D("2 particles, open_ang < 15, "
-                                     "coplanar, no veto",
+                                     "coplanar, one is uncharged",
                                      "mass [MeV/c^2]","#",
                                      mass_bins,
                                      "h_MissingMass112011"
@@ -524,7 +523,7 @@ void Compton::ProcessEvent(const TEvent& event, manager_t&)
 void Compton::ShowResult()
 {
     ant::canvas(GetName()+": Tagger Time Plots")
-            << h_PromptRandomWithTriggerSimulation
+            << h_WeightedTaggerTime
             << endc; // actually draws the canvas
 
     ant::canvas(GetName()+": Missing Mass Plots")
