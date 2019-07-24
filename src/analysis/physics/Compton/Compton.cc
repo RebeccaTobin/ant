@@ -35,72 +35,72 @@ Compton::Compton(const string& name, OptionsPtr opts) :
                                      "h_MissingMass11"
                                      );
 
-    h_MissingMass101 = HistFac.makeTH1D("1 particle",
+    h_MissingMass101 = HistFac.makeTH1D("1 Particle",
                                      "mass [MeV/c^2]","#",
                                      mass_bins,
                                      "h_MissingMass101"
                                      );
-    h_MissingMass111 = HistFac.makeTH1D("1 particle, uncharged",
+    h_MissingMass111 = HistFac.makeTH1D("1 Particle, Uncharged",
                                      "mass [MeV/c^2]","#",
                                      mass_bins,
                                      "h_MissingMass111"
                                      );
 
-    h_MissingMass102 = HistFac.makeTH1D("2 particles",
+    h_MissingMass102 = HistFac.makeTH1D("2 Particles",
                                      "mass [MeV/c^2]","#",
                                      mass_bins,
                                      "h_MissingMass102"
                                      );
-    h_MissingMass112 = HistFac.makeTH1D("2 particles, "
-                                     "one is uncharged",
+    h_MissingMass112 = HistFac.makeTH1D("2 Particles, "
+                                     "One is Uncharged",
                                      "mass [MeV/c^2]","#",
                                      mass_bins,
                                      "h_MissingMass112"
                                      );
-    h_MissingMass1021 = HistFac.makeTH1D("2 particls, "
-                                     "closer missing mass",
+    h_MissingMass1021 = HistFac.makeTH1D("2 Particles, "
+                                     "Closer Missing Mass",
                                      "mass [MeV/c^2]","#",
                                      mass_bins,
                                      "h_MissingMass1021"
                                      );
 
-    h_MissingMass10201 = HistFac.makeTH1D("2 particles, coplanar",
+    h_MissingMass10201 = HistFac.makeTH1D("2 Particles, Coplanar",
                                      "mass [MeV/c^2]","#",
                                      mass_bins,
                                      "h_MissingMass10201"
                                      );
-    h_MissingMass11201 = HistFac.makeTH1D("2 particles, coplanar, "
-                                     "one is uncharged",
+    h_MissingMass11201 = HistFac.makeTH1D("2 Particles, Coplanar, "
+                                     "One is Uncharged",
                                      "mass [MeV/c^2]","#",
                                      mass_bins,
                                      "h_MissingMass11201"
                                      );
-    h_MissingMass10211 = HistFac.makeTH1D("2 particles, coplanar, "
-                                     "closer missing mass",
+    h_MissingMass10211 = HistFac.makeTH1D("2 Particles, Coplanar, "
+                                     "Closer Missing Mass",
                                      "mass [MeV/c^2]","#",
                                      mass_bins,
                                      "h_MissingMass10211"
                                      );
 
-    h_MissingMass102001 = HistFac.makeTH1D("2 particles, open_ang < 15",
+    h_MissingMass102001 = HistFac.makeTH1D("2 Particles, Open Ang < 15",
                                      "mass [MeV/c^2]","#",
                                      mass_bins,
                                      "h_MissingMass102001"
                                      );
-    h_MissingMass112001 = HistFac.makeTH1D("2 particles, open_ang < 15, "
-                                     "one is uncharged",
+    h_MissingMass112001 = HistFac.makeTH1D("2 Particles, Open Ang < 15, "
+                                     "Uncharged",
                                      "mass [MeV/c^2]","#",
                                      mass_bins,
                                      "h_MissingMass112001"
                                      );
-    h_MissingMass102011 = HistFac.makeTH1D("2 particles, open_ang < 15, "
-                                     "coplanar",
+    h_MissingMass102011 = HistFac.makeTH1D("2 Particles, Open Ang < 15, "
+                                     "Coplanar",
                                      "mass [MeV/c^2]","#",
                                      mass_bins,
                                      "h_MissingMass102011"
                                      );
-    h_MissingMass112011 = HistFac.makeTH1D("2 particles, open_ang < 15, "
-                                     "coplanar, one is uncharged",
+    h_MissingMass112011 = HistFac.makeTH1D("2 Particles, Open Ang < 15, "
+                                     "Coplanar, Uncharged",
                                      "mass [MeV/c^2]","#",
                                      mass_bins,
                                      "h_MissingMass112011"
