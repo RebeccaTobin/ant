@@ -20,93 +20,93 @@ Compton::Compton(const string& name, OptionsPtr opts) :
 
 // ------------ Histograms Created Here but not Filled ------------
 
-    h_WeightedTaggerTime = HistFac.makeTH1D("Weighted Tagger Time",
-                                    "t [ns]","#",
-                                    time_bins,
-                                    "h_WeightedTaggerTime"
-                                    );   
-    h_MM = HistFac.makeTH1D("All particles, No Weights",
-                                     "mass [MeV/c^2]","#",
-                                     mass_bins,
-                                     "h_MM"
-                                     );
-    h_MM1 = HistFac.makeTH1D("All Particles",
-                                     "mass [MeV/c^2]","#",
-                                     mass_bins,
-                                     "h_MM1"
-                                     );
-    h_MM11 = HistFac.makeTH1D("Uncharged",
-                                     "mass [MeV/c^2]","#",
-                                     mass_bins,
-                                     "h_MM11"
-                                     );
-    h_MM101 = HistFac.makeTH1D("1 Particle",
-                                     "mass [MeV/c^2]","#",
-                                     mass_bins,
-                                     "h_MM101"
-                                     );
+//    h_WeightedTaggerTime = HistFac.makeTH1D("Weighted Tagger Time",
+//                                    "t [ns]","#",
+//                                    time_bins,
+//                                    "h_WeightedTaggerTime"
+//                                    );
+//    h_MM = HistFac.makeTH1D("All particles, No Weights",
+//                                     "mass [MeV/c^2]","#",
+//                                     mass_bins,
+//                                     "h_MM"
+//                                     );
+//    h_MM1 = HistFac.makeTH1D("All Particles",
+//                                     "mass [MeV/c^2]","#",
+//                                     mass_bins,
+//                                     "h_MM1"
+//                                     );
+//    h_MM11 = HistFac.makeTH1D("Uncharged",
+//                                     "mass [MeV/c^2]","#",
+//                                     mass_bins,
+//                                     "h_MM11"
+//                                     );
+//    h_MM101 = HistFac.makeTH1D("1 Particle",
+//                                     "mass [MeV/c^2]","#",
+//                                     mass_bins,
+//                                     "h_MM101"
+//                                     );
     h_MM111 = HistFac.makeTH1D("1 Particle, Uncharged",
                                      "mass [MeV/c^2]","#",
                                      mass_bins,
                                      "h_MM111"
                                      );
-    h_MM102 = HistFac.makeTH1D("2 Particles",
-                                     "mass [MeV/c^2]","#",
-                                     mass_bins,
-                                     "h_MM102"
-                                     );
-    h_MM112 = HistFac.makeTH1D("2 Particles, "
-                                     "One is Uncharged",
-                                     "mass [MeV/c^2]","#",
-                                     mass_bins,
-                                     "h_MM112"
-                                     );
-    h_MM1021 = HistFac.makeTH1D("2 Particles, "
-                                     "Closer Missing Mass",
-                                     "mass [MeV/c^2]","#",
-                                     mass_bins,
-                                     "h_MM1021"
-                                     );
-    h_MM10201 = HistFac.makeTH1D("2 Particles, Coplanar",
-                                     "mass [MeV/c^2]","#",
-                                     mass_bins,
-                                     "h_MM10201"
-                                     );
-    h_MM11201 = HistFac.makeTH1D("2 Particles, Coplanar, "
-                                     "One is Uncharged",
-                                     "mass [MeV/c^2]","#",
-                                     mass_bins,
-                                     "h_MM11201"
-                                     );
-    h_MM10211 = HistFac.makeTH1D("2 Particles, Coplanar, "
-                                     "Closer Missing Mass",
-                                     "mass [MeV/c^2]","#",
-                                     mass_bins,
-                                     "h_MM10211"
-                                     );
-    h_MM102001 = HistFac.makeTH1D("2 Particles, Open Ang < 15",
-                                     "mass [MeV/c^2]","#",
-                                     mass_bins,
-                                     "h_MM102001"
-                                     );
-    h_MM112001 = HistFac.makeTH1D("2 Particles, Open Ang < 15, "
-                                     "Uncharged",
-                                     "mass [MeV/c^2]","#",
-                                     mass_bins,
-                                     "h_MM112001"
-                                     );
-    h_MM112001_switch = HistFac.makeTH1D("2 Particles, One is Uncharged, "
-                                     "Open Ang < 15",
-                                     "mass [MeV/c^2]","#",
-                                     mass_bins,
-                                     "h_MM112001_switch"
-                                     );
-    h_MM102011 = HistFac.makeTH1D("2 Particles, Open Ang < 15, "
-                                     "Coplanar",
-                                     "mass [MeV/c^2]","#",
-                                     mass_bins,
-                                     "h_MM102011"
-                                     );
+//    h_MM102 = HistFac.makeTH1D("2 Particles",
+//                                     "mass [MeV/c^2]","#",
+//                                     mass_bins,
+//                                     "h_MM102"
+//                                     );
+//    h_MM112 = HistFac.makeTH1D("2 Particles, "
+//                                     "One is Uncharged",
+//                                     "mass [MeV/c^2]","#",
+//                                     mass_bins,
+//                                     "h_MM112"
+//                                     );
+//    h_MM1021 = HistFac.makeTH1D("2 Particles, "
+//                                     "Closer Missing Mass",
+//                                     "mass [MeV/c^2]","#",
+//                                     mass_bins,
+//                                     "h_MM1021"
+//                                     );
+//    h_MM10201 = HistFac.makeTH1D("2 Particles, Coplanar",
+//                                     "mass [MeV/c^2]","#",
+//                                     mass_bins,
+//                                     "h_MM10201"
+//                                     );
+//    h_MM11201 = HistFac.makeTH1D("2 Particles, Coplanar, "
+//                                     "One is Uncharged",
+//                                     "mass [MeV/c^2]","#",
+//                                     mass_bins,
+//                                     "h_MM11201"
+//                                     );
+//    h_MM10211 = HistFac.makeTH1D("2 Particles, Coplanar, "
+//                                     "Closer Missing Mass",
+//                                     "mass [MeV/c^2]","#",
+//                                     mass_bins,
+//                                     "h_MM10211"
+//                                     );
+//    h_MM102001 = HistFac.makeTH1D("2 Particles, Open Ang < 15",
+//                                     "mass [MeV/c^2]","#",
+//                                     mass_bins,
+//                                     "h_MM102001"
+//                                     );
+//    h_MM112001 = HistFac.makeTH1D("2 Particles, Open Ang < 15, "
+//                                     "Uncharged",
+//                                     "mass [MeV/c^2]","#",
+//                                     mass_bins,
+//                                     "h_MM112001"
+//                                     );
+//    h_MM112001_switch = HistFac.makeTH1D("2 Particles, One is Uncharged, "
+//                                     "Open Ang < 15",
+//                                     "mass [MeV/c^2]","#",
+//                                     mass_bins,
+//                                     "h_MM112001_switch"
+//                                     );
+//    h_MM102011 = HistFac.makeTH1D("2 Particles, Open Ang < 15, "
+//                                     "Coplanar",
+//                                     "mass [MeV/c^2]","#",
+//                                     mass_bins,
+//                                     "h_MM102011"
+//                                     );
     h_MM112011 = HistFac.makeTH1D("2 Particles, Open Ang < 15, "
                                      "Coplanar, Uncharged",
                                      "mass [MeV/c^2]","#",
@@ -452,7 +452,7 @@ void Compton::ProcessEvent(const TEvent& event, manager_t&)
         // prompt, weight of 0.0 in outside and weight of between
         // 0 and 1 in random (for calculus reasons)
         const double weight = promptrandom.FillWeight();
-        h_WeightedTaggerTime->Fill(taggerhit.Time, weight);
+//        h_WeightedTaggerTime->Fill(taggerhit.Time, weight);
 
 //     ---------- The Bulk (cuts, and filling histograms) ----------
 
@@ -465,22 +465,22 @@ void Compton::ProcessEvent(const TEvent& event, manager_t&)
 
         // Looping over the candidates
         // (particles in CB) in each event
-        for (const auto& candidate : event.Reconstructed().Candidates) {
+//        for (const auto& candidate : event.Reconstructed().Candidates) {
 
-            missing_mass = GetMissingMass(candidate, target_vec, incoming_vec);
+//            missing_mass = GetMissingMass(candidate, target_vec, incoming_vec);
 
-            // All particles, no weights
-            h_MM->Fill(missing_mass);
-            // All particles, with weights
-            h_MM1->Fill(missing_mass, weight);
+//            // All particles, no weights
+//            h_MM->Fill(missing_mass);
+//            // All particles, with weights
+//            h_MM1->Fill(missing_mass, weight);
 
 
-            if (Compton::IsParticleCharged(candidate.VetoEnergy) == false)
-            {
-                // All charged particles cut
-                h_MM11->Fill(missing_mass, weight);
-            }
-        }
+//            if (Compton::IsParticleCharged(candidate.VetoEnergy) == false)
+//            {
+//                // All charged particles cut
+//                h_MM11->Fill(missing_mass, weight);
+//            }
+//        }
 
 //             -------------- 1 Particle Events --------------
 
@@ -488,10 +488,10 @@ void Compton::ProcessEvent(const TEvent& event, manager_t&)
         {
             for (const auto& candidate : event.Reconstructed().Candidates)
             {
-                missing_mass = GetMissingMass(candidate, target_vec, incoming_vec);
+//                missing_mass = GetMissingMass(candidate, target_vec, incoming_vec);
 
                 // 1 particle in event
-                h_MM101->Fill(missing_mass, weight);
+//                h_MM101->Fill(missing_mass, weight);
 
                 if (Compton::IsParticleCharged(candidate.VetoEnergy) == false)
                 {
@@ -508,34 +508,34 @@ void Compton::ProcessEvent(const TEvent& event, manager_t&)
             const auto& candidates = event.Reconstructed().Candidates;
 
             // Using both particles to calc missing mass
-            for (const auto& candidate : candidates)
-            {
-                missing_mass = GetMissingMass(candidate, target_vec, incoming_vec);
+//            for (const auto& candidate : candidates)
+//            {
+//                missing_mass = GetMissingMass(candidate, target_vec, incoming_vec);
 
                 // 2 particles in event
-                h_MM102->Fill(missing_mass, weight);
-            }
+//                h_MM102->Fill(missing_mass, weight);
+//            }
 
             // Keeping only the 2 particles in which one is charged and
             // the other is not. Using the uncharged particle to calc
             // the missing mass
             if (IsChargedUncharged(candidates) == 1)
             {
-                missing_mass = GetMissingMass(candidates.front(),
-                                              target_vec, incoming_vec);
+//                missing_mass = GetMissingMass(candidates.front(),
+//                                              target_vec, incoming_vec);
 
                 // 2 particles in event, one is charged and the other is not
-                h_MM112->Fill(missing_mass, weight);
+//                h_MM112->Fill(missing_mass, weight);
 
                 // Opening angle cut
                 if( IsOpeningAngle2(candidates,target_vec,incoming_vec,1) == true )
                 {
-                    missing_mass = GetMissingMass(candidates.front(),
-                                                  target_vec, incoming_vec);
+//                    missing_mass = GetMissingMass(candidates.front(),
+//                                                  target_vec, incoming_vec);
 
                     // 2 particles in event, one is charged and the other is not,
                     // opening angle < 15 degrees
-                    h_MM112001_switch->Fill(missing_mass, weight);
+//                    h_MM112001_switch->Fill(missing_mass, weight);
 
                     // Colpanar cut
                     if ( IsCoplanar(candidates) == true )
@@ -553,19 +553,19 @@ void Compton::ProcessEvent(const TEvent& event, manager_t&)
             // All again but with other configuration
             if (IsChargedUncharged(candidates) == 2)
             {
-                missing_mass = GetMissingMass(candidates.back(),
-                                              target_vec, incoming_vec);
+//                missing_mass = GetMissingMass(candidates.back(),
+//                                              target_vec, incoming_vec);
 
                 // 2 particles in event, one is charged and the other is not
-                h_MM112->Fill(missing_mass, weight);
+//                h_MM112->Fill(missing_mass, weight);
 
                 // Opening angle cut
                 if( IsOpeningAngle2(candidates,target_vec,incoming_vec,2) == true )
                 {
-                    missing_mass = GetMissingMass(candidates.back(),
-                                                  target_vec, incoming_vec);
+//                    missing_mass = GetMissingMass(candidates.back(),
+//                                                  target_vec, incoming_vec);
 
-                    h_MM112001_switch->Fill(missing_mass, weight);
+//                    h_MM112001_switch->Fill(missing_mass, weight);
 
                     // Colpanar cut
                     if ( IsCoplanar(candidates) == true )
@@ -582,81 +582,81 @@ void Compton::ProcessEvent(const TEvent& event, manager_t&)
             }
 
             // Getting the closer missing mass
-            closer_missing_mass = GetCloserMM
-                    (candidates, target_vec, incoming_vec);
+//            closer_missing_mass = GetCloserMM
+//                    (candidates, target_vec, incoming_vec);
 
             // 2 particles in event, only closer missing mass
-            h_MM1021->Fill(closer_missing_mass, weight);
+//            h_MM1021->Fill(closer_missing_mass, weight);
 
             // Check if 2 particles in event are coplanar
             if (IsCoplanar(candidates) == true )
             {
-                for (const auto& candidate : candidates)
-                {
-                    missing_mass = GetMissingMass
-                            (candidate, target_vec, incoming_vec);
+//                for (const auto& candidate : candidates)
+//                {
+//                    missing_mass = GetMissingMass
+//                            (candidate, target_vec, incoming_vec);
 
                     // 2 particles in event, event is coplanar
-                    h_MM10201->Fill(missing_mass, weight);
-                }
+//                    h_MM10201->Fill(missing_mass, weight);
+//                }
 
                 // Uncharged/Charged cut
-                if (IsChargedUncharged(candidates) == 1)
-                {
-                    missing_mass = GetMissingMass(candidates.front(),
-                                                  target_vec, incoming_vec);
+//                if (IsChargedUncharged(candidates) == 1)
+//                {
+//                    missing_mass = GetMissingMass(candidates.front(),
+//                                                  target_vec, incoming_vec);
 
                     // 2 particles in event, one is charged and the
                     // other is not, event is coplanar
-                    h_MM11201->Fill(missing_mass, weight);
-                }
+//                    h_MM11201->Fill(missing_mass, weight);
+//                }
 
-                if (IsChargedUncharged(candidates) == 2)
-                {
-                    missing_mass = GetMissingMass(candidates.back(),
-                                                  target_vec, incoming_vec);
+//                if (IsChargedUncharged(candidates) == 2)
+//                {
+//                    missing_mass = GetMissingMass(candidates.back(),
+//                                                  target_vec, incoming_vec);
 
                     // 2 particles in event, one is charged and the
                     // other is not, event is coplanar
-                    h_MM11201->Fill(missing_mass,weight);
-                }
+//                    h_MM11201->Fill(missing_mass,weight);
+//                }
 
                 // Closer missing mass cut
-                closer_missing_mass = GetCloserMM
-                        (candidates, target_vec, incoming_vec);
+//                closer_missing_mass = GetCloserMM
+//                        (candidates, target_vec, incoming_vec);
 
                 // 2 particles in event, event is coplanar, plot
                 // only the closer missing mass
-                h_MM10211->Fill(closer_missing_mass, weight);
+//                h_MM10211->Fill(closer_missing_mass, weight);
             }
 
             // Check if opening angle is < 15 deg
             if (IsOpeningAngle(candidates, target_vec, incoming_vec) == 1 )
             {
-                missing_mass = GetMissingMass
-                         (candidates.front(), target_vec, incoming_vec);
+//                missing_mass = GetMissingMass
+//                         (candidates.front(), target_vec, incoming_vec);
 
                 // 2 particles in event, open ang < 15
-                h_MM102001->Fill(missing_mass, weight);
+//                h_MM102001->Fill(missing_mass, weight);
 
                 // Cut charged particles
-                if (IsParticleCharged(candidates.front().VetoEnergy) == false)
-                {
-                    missing_mass = GetMissingMass
-                             (candidates.front(), target_vec, incoming_vec);
+//                if (IsParticleCharged(candidates.front().VetoEnergy) == false)
+//                {
+//                    missing_mass = GetMissingMass
+//                             (candidates.front(), target_vec, incoming_vec);
 
                     // 2 particles in event, open ang < 15, uncharged
-                    h_MM112001->Fill(missing_mass, weight);
-                }
+//                    h_MM112001->Fill(missing_mass, weight);
+//                }
 
                 // Keep only coplanar events
                 if (IsCoplanar(candidates) == true )
                 {
-                    missing_mass = GetMissingMass
-                             (candidates.front(), target_vec, incoming_vec);
+//                    missing_mass = GetMissingMass
+//                             (candidates.front(), target_vec, incoming_vec);
 
                     // 2 particles in event, open ang < 15, event is coplanar
-                    h_MM102011->Fill(missing_mass, weight);
+//                    h_MM102011->Fill(missing_mass, weight);
 
                     // Cut charged particles
                     if (IsParticleCharged(candidates.front().VetoEnergy) == false)
@@ -674,30 +674,30 @@ void Compton::ProcessEvent(const TEvent& event, manager_t&)
             // All that again but for the other configuration
             if (IsOpeningAngle(candidates, target_vec, incoming_vec) == 2 )
             {
-                missing_mass = GetMissingMass
-                         (candidates.back(), target_vec, incoming_vec);
+//                missing_mass = GetMissingMass
+//                         (candidates.back(), target_vec, incoming_vec);
 
                 // 2 particles in event, open ang < 15
-                h_MM102001->Fill(missing_mass, weight);
+//                h_MM102001->Fill(missing_mass, weight);
 
                 // Cut charged particles
-                if (IsParticleCharged(candidates.back().VetoEnergy) == false)
-                {
-                    missing_mass = GetMissingMass
-                             (candidates.back(), target_vec, incoming_vec);
+//                if (IsParticleCharged(candidates.back().VetoEnergy) == false)
+//                {
+//                    missing_mass = GetMissingMass
+//                             (candidates.back(), target_vec, incoming_vec);
 
                     // 2 particles in event, open ang < 15, uncharged
-                    h_MM112001->Fill(missing_mass, weight);
-                }
+//                    h_MM112001->Fill(missing_mass, weight);
+//                }
 
                 // Keep only coplanar events
                 if (IsCoplanar(candidates) == true )
                 {
-                    missing_mass = GetMissingMass
-                             (candidates.back(), target_vec, incoming_vec);
+//                    missing_mass = GetMissingMass
+//                             (candidates.back(), target_vec, incoming_vec);
 
                     // 2 particles in event, open ang < 15, event is coplanar
-                    h_MM102011->Fill(missing_mass, weight);
+//                    h_MM102011->Fill(missing_mass, weight);
 
                     // Cut charged particles
                     if (IsParticleCharged(candidates.front().VetoEnergy) == false)
@@ -719,39 +719,39 @@ void Compton::ProcessEvent(const TEvent& event, manager_t&)
 
 void Compton::ShowResult()
 {
-    ant::canvas(GetName()+": Tagger Time Plots")
-            << h_WeightedTaggerTime
-            << endc; // actually draws the canvas
+//    ant::canvas(GetName()+": Tagger Time Plots")
+//            << h_WeightedTaggerTime
+//            << endc; // actually draws the canvas
 
-    ant::canvas(GetName()+": Preliminary Cuts")
-            << h_MM
-            << h_MM1
-            << h_MM11
-            << endc;
+//    ant::canvas(GetName()+": Preliminary Cuts")
+//            << h_MM
+//            << h_MM1
+//            << h_MM11
+//            << endc;
 
     ant::canvas(GetName()+": 1 Particle Events")
-            << h_MM101
+//            << h_MM101
             << h_MM111
             << endc;
 
-    ant::canvas(GetName()+": 2 Particle Events")
-            << h_MM102
-            << h_MM112
-            << h_MM1021
-            << endc;
+//    ant::canvas(GetName()+": 2 Particle Events")
+//            << h_MM102
+//            << h_MM112
+//            << h_MM1021
+//            << endc;
 
-    ant::canvas(GetName()+": Coplanar Events")
-            << h_MM10201
-            << h_MM11201
-            << h_MM10211
-            << endc;
+//    ant::canvas(GetName()+": Coplanar Events")
+//            << h_MM10201
+//            << h_MM11201
+//            << h_MM10211
+//            << endc;
 
     ant::canvas(GetName()+": Events with Opening Angle < 15")
-            << h_MM102001
-            << h_MM112001
-            << h_MM102011
+//            << h_MM102001
+//            << h_MM112001
+//            << h_MM102011
             << h_MM112011
-            << h_MM112001_switch
+//            << h_MM112001_switch
             << h_MM112011_switch
             << endc;
 }

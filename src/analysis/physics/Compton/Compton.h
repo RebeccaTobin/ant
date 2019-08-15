@@ -79,39 +79,39 @@ private:
 
     // TH1 is a root command for making histograms. The D at
     // the end stands for double and it indicates what type
-    // the height of the bins will be.
+    // the counts in each bin will be.
 
     // Tagger hits with weights applied (to check if PR
     // windows were chosen well)
-    TH1D* h_WeightedTaggerTime;
+//    TH1D* h_WeightedTaggerTime;
 
     // Preliminary cuts
     // Note: MM means missing mass
-    TH1D* h_MM;
-    TH1D* h_MM1;
-    TH1D* h_MM11;
+//    TH1D* h_MM;
+//    TH1D* h_MM1;
+//    TH1D* h_MM11;
 
     // 1 Particle cuts
-    TH1D* h_MM101;
+//    TH1D* h_MM101;
     TH1D* h_MM111;
 
     // Preliminary 2 particle cuts
-    TH1D* h_MM102;
-    TH1D* h_MM112;
-    TH1D* h_MM1021;
+//    TH1D* h_MM102;
+//    TH1D* h_MM112;
+//    TH1D* h_MM1021;
 
     // Coplanar cuts
-    TH1D* h_MM10201;
-    TH1D* h_MM11201;
-    TH1D* h_MM10211;
+//    TH1D* h_MM10201;
+//    TH1D* h_MM11201;
+//    TH1D* h_MM10211;
 
     // Opening angle cuts
-    TH1D* h_MM102001;
-    TH1D* h_MM112001;
-    TH1D* h_MM102011;
+//    TH1D* h_MM102001;
+//    TH1D* h_MM112001;
+//    TH1D* h_MM102011;
     TH1D* h_MM112011;
     // Uncharged/Charged cut done before open ang cut
-    TH1D* h_MM112001_switch;
+//    TH1D* h_MM112001_switch;
     TH1D* h_MM112011_switch;
 
     // Stuff for PR cut
