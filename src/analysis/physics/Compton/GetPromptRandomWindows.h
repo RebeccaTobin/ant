@@ -19,6 +19,7 @@ public:
 
 private:
     TH1D* h_TaggerTime;
+    TH1D* h_TaggerTimeCBSubtraction;
 
     PromptRandom::Switch promptrandom;
     utils::TriggerSimulation triggersimu;

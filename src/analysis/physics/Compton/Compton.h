@@ -1,11 +1,18 @@
+// ----------------------- Important -----------------------
+// In Compton folder is a README file. Please read it if you
+// want to use this code.
+
+
 // If this file is #include more than once, this command tells
 // the compiler to read this file only once
 #pragma once
 
 #include "physics/Physics.h"
+
 // To subtact out random tagger hits
 #include "plot/PromptRandomHist.h"
 #include "utils/TriggerSimulation.h"
+
 // To get stuff at the command line
 #include "base/Logger.h"
 
@@ -18,91 +25,122 @@ namespace physics {
 // Creating a new class called Compton that inherits
 // the members of the Physics class. The Physics class is
 // defined in "physics.h"
-
 class Compton : public Physics {
 public:
-    // Constructor created but not defined
+
+// -------------- The Generic Ant Fucntions --------------
+
+    // Constructor declared
     Compton(const std::string& name, OptionsPtr opts);
 
     // ProcessEvent is a funtion that is used by every physics
-    // class. override is used so that when the compiler gets
-    // to this code, the ProcessEvent defined here becomes the
+    // class. "override" tells the compiler to used this
+    // ProcessEvent as default when it runs this class
     // default. TEvent and manager_t are data types that are
-    // defined elswhere in ant (like int or char or double).
-    // & indicateds that the variables event and manager are
-    // being passed as a reference (which means they will be
-    // modified by the function.
-    virtual void ProcessEvent(const TEvent& event, manager_t& manager) override;
+    // defined in ant (like int or char or double).
+    // "event" is a data structure with all the info for an
+    // event. ProcessEvent loops over all the events
+    virtual void ProcessEvent(const TEvent& event,
+                              manager_t& manager) override;
 
+    // For outputting stuff (like histograms)
     virtual void ShowResult() override;
 
+
+// ------- Funtions specific to the Compton class -------
+
+    // (explinations in cc file)
     bool IsParticleCharged(double veto_energy);
 
-    int IsPhotonProton(const TCandidateList& candidates);
+    int IsChargedUncharged(const TCandidateList& candidates);
 
     double GetMissingMass(const TCandidate& candidate,
-                     const LorentzVec target, const LorentzVec incoming);
+                          const LorentzVec target,
+                          const LorentzVec incoming);
 
-    double GetCloserMM
-    (const TCandidateList& candidates, const LorentzVec target, const LorentzVec incoming);
+    double GetCloserMM(const TCandidateList& candidates,
+                       const LorentzVec target,
+                       const LorentzVec incoming);
 
     bool IsCoplanar(const TCandidateList& candidates);
 
-    int IsOpeningAngle
-    (const TCandidateList& candidates, const LorentzVec target, const LorentzVec incoming,
-     double opening_angle_limit);
+    int IsOpeningAngle(const TCandidateList& candidates,
+                       const LorentzVec target,
+                       const LorentzVec incoming);
+
+    bool IsOpeningAngle2(const TCandidateList& candidates,
+                         const LorentzVec target,
+                         const LorentzVec incoming,
+                         const int IsChargedUncharged_output);
+
+private:
+
+// --------- Where all the histograms are declared ---------
+
+    // TH1 is a root command for making histograms. The D at
+    // the end stands for double and it indicates what type
+    // the height of the bins will be.
+
+    // Tagger hits with weights applied (to check if PR
+    // windows were chosen well)
+    TH1D* h_WeightedTaggerTime;
+
+    // Preliminary cuts
+    // Note: MM means missing mass
+    TH1D* h_MM;
+    TH1D* h_MM1;
+    TH1D* h_MM11;
+
+    // 1 Particle cuts
+    TH1D* h_MM101;
+    TH1D* h_MM111;
+
+    // Preliminary 2 particle cuts
+    TH1D* h_MM102;
+    TH1D* h_MM112;
+    TH1D* h_MM1021;
+
+    // Coplanar cuts
+    TH1D* h_MM10201;
+    TH1D* h_MM11201;
+    TH1D* h_MM10211;
+
+    // Opening angle cuts
+    TH1D* h_MM102001;
+    TH1D* h_MM112001;
+    TH1D* h_MM102011;
+    TH1D* h_MM112011;
+    // Uncharged/Charged cut done before open ang cut
+    TH1D* h_MM112001_switch;
+    TH1D* h_MM112011_switch;
+
+    // Stuff for PR cut
+    PromptRandom::Switch promptrandom;
+    utils::TriggerSimulation triggersimu;
+
+
+// ---- Default values for options at the command line ----
+
+    // Incoming photon energy range cut
+    double tagger_energy_low = 0;     // in MeV
+    double tagger_energy_high = 2000;
+
+    // Prompt random windows
+    std::string PR_windows = "-200,-6,-5,5,6,200";   // in ns
+
+// ------------------ Other Objects used ------------------
+
+    const double proton_mass = ParticleTypeDatabase::Proton.Mass();
+
+    // Momentum 4 vectors for target (i.e. stationary proton)
+    // and incoming photon
+    const LorentzVec target_vec = LorentzVec({0.0,0.0,0.0},
+                     proton_mass);
+    LorentzVec incoming_vec;
 
     double missing_mass;
     double closer_missing_mass;
 
-    // Momentum 4 vector for incoming photon.
-    // Note: momentum only in the z-direction
-    LorentzVec incoming_vec;
-
-private:
-    // TH1 is a root command for making histograms. The D at the
-    // end stands for double and it indicates what the height of
-    // the bins will be. h_nClusters is the name of the histogram.
-    // You would put all your histograms here.
-    //TH1D* h_TaggerandClusterTime;
-    //TH1D* h_TaggerTime;
-    //TH1D* h_TaggerCBSubtaction;
-    TH1D* h_WeightedTaggerTime;
-    TH1D* h_MissingMass;
-    TH1D* h_MissingMass1;
-    TH1D* h_MissingMass11;
-
-    TH1D* h_MissingMass101;
-    TH1D* h_MissingMass111;
-
-    TH1D* h_MissingMass102;
-    TH1D* h_MissingMass112;
-    TH1D* h_MissingMass1021;
-
-    TH1D* h_MissingMass10201;
-    TH1D* h_MissingMass11201;
-    TH1D* h_MissingMass10211;
-
-    TH1D* h_MissingMass102001;
-    TH1D* h_MissingMass112001;
-    TH1D* h_MissingMass102011;
-    TH1D* h_MissingMass112011;
-
-    PromptRandom::Switch promptrandom;
-    utils::TriggerSimulation triggersimu;
-
-    // Default values for option at the command line
-    double tagger_energy_low = 0;     // in MeV
-    double tagger_energy_high = 2000;
-    std::string promptrandom_windows = "-200,7,9,19,21,200";   // in ns
-
-    const double proton_mass = ParticleTypeDatabase::Proton.Mass();
-
-    // Momentum 4 vector for target (i.e. stationary proton)
-    const LorentzVec target_vec = LorentzVec({0.0,0.0,0.0},
-                     proton_mass);
-
-    double open_ang_limit = 15.0;
 };
 
 }}}

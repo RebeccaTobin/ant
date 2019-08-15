@@ -18,34 +18,41 @@ GetPromptRandomWindows::GetPromptRandomWindows(const string& name, OptionsPtr op
                                     time_bins,        // binnings
                                     "h_TaggerTime"    // ROOT object name, auto-generated if omitted
                                     );
+    h_TaggerTimeCBSubtraction = HistFac.makeTH1D("Tagger Time with CB Time Subtracted",
+                                    "t [ns]","#",
+                                    time_bins,
+                                    "h_TaggerTimeCBSubtraction"
+                                    );
 }
 
 void GetPromptRandomWindows::ProcessEvent(const TEvent& event, manager_t&)
 {
-    // Runs ProcessEvent function in TriggerSimulation file which
+    // Runs the ProcessEvent function for TriggerSimulation
     // does the calculations
     triggersimu.ProcessEvent(event);
 
     for (const auto& taggerhit : event.Reconstructed().TaggerHits)
     {
-
         // Apply trigger simulation to tagger hits
         // This subtracts a weighted time from the CB (see wiki)
         const auto& CorrectedTaggerTime =
                 triggersimu.GetCorrectedTaggerTime(taggerhit);
 
         promptrandom.SetTaggerTime(CorrectedTaggerTime);
-        h_TaggerTime->Fill(CorrectedTaggerTime);
+        h_TaggerTime->Fill(taggerhit.Time);
+        h_TaggerTimeCBSubtraction->Fill(CorrectedTaggerTime);
     }
 }
 
 void GetPromptRandomWindows::ShowResult()
 {
     ant::canvas(GetName()+": Tagger Time Plot")
-            << h_TaggerTime
-            << endc; // actually draws the canvas
+            << h_TaggerTime                      // Tagger hit times
+            << h_TaggerTimeCBSubtraction         // Tagger hit times with the subtraction
+                                                 // -> used to identify PR windows
+            << endc; // draws the canvas
 }
 
-// A macro that registers the Compton class with Ant so that
-// you can call this class using "Ant -p Compton"
+// A macro that registers the GetPromptRandomWindows class with Ant so that
+// you can call this class using "Ant -p GetPromptRandomWindows"
 AUTO_REGISTER_PHYSICS(GetPromptRandomWindows)
