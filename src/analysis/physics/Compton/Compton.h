@@ -114,6 +114,16 @@ private:
 //    TH1D* h_MM112001_switch;
     TH1D* h_MM112011_switch;
 
+    // 3D Plots
+    TH3D* h3D_MM111;
+    TH3D* h3D_MM112011;
+    TH3D* h3D_MM112011_switch;
+
+    // 3D Plot Projections
+    TH1D* h3D_MM111_projX;
+    TH1D* h3D_MM112011_projX;
+    TH1D* h3D_MM112011_switch_projX;
+
     // Stuff for PR cut
     PromptRandom::Switch promptrandom;
     utils::TriggerSimulation triggersimu;

@@ -16,7 +16,8 @@ Compton::Compton(const string& name, OptionsPtr opts) :
     // Bins used in histograms
     const BinSettings time_bins(2000, -200, 200);
     const BinSettings mass_bins(250, 800, 1300);
-    //const BinSettings ang_bins(50,0,100);
+    const BinSettings angle_bins(8, 70, 150);
+    const BinSettings taggerchannel_bins(328, 0, 328);
 
 // ------------ Histograms Created Here but not Filled ------------
 
@@ -50,6 +51,15 @@ Compton::Compton(const string& name, OptionsPtr opts) :
                                      mass_bins,
                                      "h_MM111"
                                      );
+    h3D_MM111 = HistFac.makeTH3D("1 Particle, Uncharged",
+                                 "Missing Mass [MeV]",
+                                 "Angle [deg]",
+                                 "Tagger Channel",
+                                 mass_bins,
+                                 angle_bins,
+                                 taggerchannel_bins ,
+                                 "h3D_MM111"
+                                 );
 //    h_MM102 = HistFac.makeTH1D("2 Particles",
 //                                     "mass [MeV/c^2]","#",
 //                                     mass_bins,
@@ -108,17 +118,37 @@ Compton::Compton(const string& name, OptionsPtr opts) :
 //                                     "h_MM102011"
 //                                     );
     h_MM112011 = HistFac.makeTH1D("2 Particles, Open Ang < 15, "
-                                     "Coplanar, Uncharged",
-                                     "mass [MeV/c^2]","#",
-                                     mass_bins,
-                                     "h_MM112011"
+                                  "Coplanar, Uncharged",
+                                  "mass [MeV/c^2]","#",
+                                  mass_bins,
+                                  "h_MM112011"
                                      );
+    h3D_MM112011 = HistFac.makeTH3D("2 Particles, Open Ang < 15, "
+                                    "Coplanar, Uncharged",
+                                    "Missing Mass [MeV]",
+                                    "Angle [deg]",
+                                    "Tagger Channel",
+                                    mass_bins,
+                                    angle_bins,
+                                    taggerchannel_bins ,
+                                    "h3D_MM112011"
+                                    );
     h_MM112011_switch = HistFac.makeTH1D("2 Particles, One is Uncharged, "
                                          "Open Ang < 15, Coplanar",
-                                     "mass [MeV/c^2]","#",
-                                     mass_bins,
-                                     "h_MM112011_switch"
-                                     );
+                                         "mass [MeV/c^2]","#",
+                                         mass_bins,
+                                         "h_MM112011_switch"
+                                         );
+    h3D_MM112011_switch = HistFac.makeTH3D("2 Particles, One is Uncharged, "
+                                           "Open Ang < 15, Coplanar",
+                                           "Missing Mass [MeV]",
+                                           "Angle [deg]",
+                                           "Tagger Channel",
+                                           mass_bins,
+                                           angle_bins,
+                                           taggerchannel_bins ,
+                                           "h3D_MM112011"
+                                           );
 
 //  ---------------- Get Variables at Command Line ----------------
 
@@ -488,7 +518,7 @@ void Compton::ProcessEvent(const TEvent& event, manager_t&)
         {
             for (const auto& candidate : event.Reconstructed().Candidates)
             {
-//                missing_mass = GetMissingMass(candidate, target_vec, incoming_vec);
+                missing_mass = GetMissingMass(candidate, target_vec, incoming_vec);
 
                 // 1 particle in event
 //                h_MM101->Fill(missing_mass, weight);
@@ -497,6 +527,10 @@ void Compton::ProcessEvent(const TEvent& event, manager_t&)
                 {
                     // 1 particle in event, particle is uncharged
                     h_MM111->Fill(missing_mass, weight);
+
+                    // Filling 3D Plot
+                    h3D_MM111->Fill(missing_mass, candidate.Theta,
+                                    taggerhit.Channel, weight);
                 }
             }
         }
@@ -528,7 +562,7 @@ void Compton::ProcessEvent(const TEvent& event, manager_t&)
 //                h_MM112->Fill(missing_mass, weight);
 
                 // Opening angle cut
-                if( IsOpeningAngle2(candidates,target_vec,incoming_vec,1) == true )
+                if( IsOpeningAngle2(candidates,target_vec,incoming_vec, 1) == true )
                 {
 //                    missing_mass = GetMissingMass(candidates.front(),
 //                                                  target_vec, incoming_vec);
@@ -546,6 +580,12 @@ void Compton::ProcessEvent(const TEvent& event, manager_t&)
                         // 2 particles in event, one is charged and the other is not,
                         // opening angle < 15 degrees, coplanar
                         h_MM112011_switch->Fill(missing_mass, weight);
+
+                        // Fill 3D histogram
+                        h3D_MM112011_switch->Fill(missing_mass,
+                                                  candidates.front().Theta,
+                                                  taggerhit.Channel,
+                                                  weight);
                     }
                 }
             }
@@ -560,7 +600,7 @@ void Compton::ProcessEvent(const TEvent& event, manager_t&)
 //                h_MM112->Fill(missing_mass, weight);
 
                 // Opening angle cut
-                if( IsOpeningAngle2(candidates,target_vec,incoming_vec,2) == true )
+                if( IsOpeningAngle2(candidates,target_vec,incoming_vec, 2) == true )
                 {
 //                    missing_mass = GetMissingMass(candidates.back(),
 //                                                  target_vec, incoming_vec);
@@ -576,6 +616,12 @@ void Compton::ProcessEvent(const TEvent& event, manager_t&)
                         // 2 particles in event, one is charged and the other is not,
                         // opening angle < 15 degrees, coplanar
                         h_MM112011_switch->Fill(missing_mass, weight);
+
+                        // Fill 3D histogram
+                        h3D_MM112011_switch->Fill(missing_mass,
+                                                  candidates.front().Theta,
+                                                  taggerhit.Channel,
+                                                  weight);
                     }
                 }
 
@@ -667,6 +713,12 @@ void Compton::ProcessEvent(const TEvent& event, manager_t&)
                         // 2 particles in event, open ang < 15, uncharged,
                         // event is coplanar
                         h_MM112011->Fill(missing_mass, weight);
+                        
+                        // Fill 3D histogram
+                        h3D_MM112011->Fill(missing_mass,
+                                           candidates.front().Theta,
+                                           taggerhit.Channel,
+                                           weight);
                     }
                 }
             }
@@ -708,6 +760,12 @@ void Compton::ProcessEvent(const TEvent& event, manager_t&)
                         // 2 particles in event, open ang < 15, uncharged,
                         // event is coplanar
                         h_MM112011->Fill(missing_mass, weight);
+
+                        // Fill 3D histogram
+                        h3D_MM112011->Fill(missing_mass,
+                                           candidates.front().Theta,
+                                           taggerhit.Channel,
+                                           weight);
                     }
                 }
             }
@@ -719,6 +777,10 @@ void Compton::ProcessEvent(const TEvent& event, manager_t&)
 
 void Compton::ShowResult()
 {
+    h3D_MM111_projX = h3D_MM111->ProjectionX("Name");
+    h3D_MM112011_projX = h3D_MM112011->ProjectionX("Name");
+    h3D_MM112011_switch_projX = h3D_MM112011_switch->ProjectionX("Name");
+
 //    ant::canvas(GetName()+": Tagger Time Plots")
 //            << h_WeightedTaggerTime
 //            << endc; // actually draws the canvas
@@ -732,6 +794,8 @@ void Compton::ShowResult()
     ant::canvas(GetName()+": 1 Particle Events")
 //            << h_MM101
             << h_MM111
+            << h3D_MM111
+            << h3D_MM111_projX
             << endc;
 
 //    ant::canvas(GetName()+": 2 Particle Events")
@@ -751,8 +815,12 @@ void Compton::ShowResult()
 //            << h_MM112001
 //            << h_MM102011
             << h_MM112011
+            << h3D_MM112011
+            << h3D_MM112011_projX
 //            << h_MM112001_switch
             << h_MM112011_switch
+            << h3D_MM112011_switch
+            << h3D_MM112011_switch_projX
             << endc;
 }
 
