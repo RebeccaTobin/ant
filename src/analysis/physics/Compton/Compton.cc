@@ -19,8 +19,7 @@ Compton::Compton(const string& name, OptionsPtr opts) :
     const BinSettings time_bins(2000, -200, 200);
     const BinSettings mass_bins(250, 800, 1300);
     const BinSettings angle_bins(8, 70, 150);
-    const BinSettings taggerchannel_bins(328, 0, 328);
-    const BinSettings bins_tagger(nchannels);
+    const BinSettings taggerchannel_bins(nchannels);
 
 // ------------ Histograms Created Here but not Filled ------------
 
@@ -170,8 +169,10 @@ Compton::Compton(const string& name, OptionsPtr opts) :
                                          "h3D_MM112011_switch_projX"
                                          );
 
-//    h_ScalarCounts = HistFac.makeTH1D("Total Counts in Tagger",
-//                                      )
+    h_ScalarCounts = HistFac.makeTH1D("Total Counts in Tagger",
+                                      "Tagger Channel","#",
+                                      taggerchannel_bins,
+                                      "h_ScalarCounts");
 
 //  ---------------- Get Variables at Command Line ----------------
 
@@ -794,15 +795,17 @@ void Compton::ProcessEvent(const TEvent& event, manager_t&)
             }
         }
     }
+
+    h3D_MM111_projX = h3D_MM111->ProjectionX("Name");
+    h3D_MM112011_projX = h3D_MM112011->ProjectionX("Name");
+    h3D_MM112011_switch_projX = h3D_MM112011_switch->ProjectionX("Name");
+
 }
 
 // ---------------------- Outputing the Histograms ----------------------
 
 void Compton::ShowResult()
 {
-//    h3D_MM111_projX = h3D_MM111->ProjectionX("Name");
-//    h3D_MM112011_projX = h3D_MM112011->ProjectionX("Name");
-//    h3D_MM112011_switch_projX = h3D_MM112011_switch->ProjectionX("Name");
 
 //    ant::canvas(GetName()+": Tagger Time Plots")
 //            << h_WeightedTaggerTime
@@ -844,6 +847,10 @@ void Compton::ShowResult()
             << h_MM112011_switch
             << h3D_MM112011_switch
             << h3D_MM112011_switch_projX
+            << endc;
+
+    ant::canvas(GetName()+": Scalar Counts")
+            << h_ScalarCounts
             << endc;
 }
 
