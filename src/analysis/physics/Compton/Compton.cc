@@ -18,7 +18,7 @@ Compton::Compton(const string& name, OptionsPtr opts) :
     // Bins used in histograms
     const BinSettings time_bins(2000, -200, 200);
     const BinSettings mass_bins(250, 800, 1300);
-    const BinSettings angle_bins(8, 70, 150);
+    const BinSettings angle_bins(18, 0, 360);
     const BinSettings taggerchannel_bins(nchannels);
 
 // ------------ Histograms Created Here but not Filled ------------
@@ -813,7 +813,6 @@ void Compton::ProcessEvent(const TEvent& event, manager_t&)
     h3D_MM111_projX = h3D_MM111->ProjectionX("Name");
     h3D_MM112011_projX = h3D_MM112011->ProjectionX("Name");
     h3D_MM112011_switch_projX = h3D_MM112011_switch->ProjectionX("Name");
-
 }
 
 // ---------------------- Outputing the Histograms ----------------------
