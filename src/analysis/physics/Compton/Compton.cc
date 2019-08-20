@@ -197,6 +197,10 @@ Compton::Compton(const string& name, OptionsPtr opts) :
         tagger_energy_low = opts->Get<double>("low", 0);
     if (opts->HasOption("high"))
         tagger_energy_high = opts->Get<double>("high", 2000);
+
+// ------------------ Getting Tagger Scalars ------------------
+
+    slowcontrol::Variables::TaggerScalers->Request();
 }
 
 // ------------ Funtions specific to the Compton class ------------
@@ -461,11 +465,21 @@ bool Compton::IsOpeningAngle2(const TCandidateList& candidates,
 
     else
     {
-        LOG(ERROR) << "Invalid IsChargedUncharged_output, function returns false";
+        LOG(ERROR) << "Invalid IsChargedUncharged_output, "
+                      "function returns false";
         return false;
     }
 }
 
+void Compton::PlotCounts()
+{
+    for ( auto ch = 0u ; ch < nchannels ; ++ch)
+    {
+        const auto counts = slowcontrol::Variables::TaggerScalers->
+                            GetCounts().at(ch);
+        h_ScalarCounts->Fill(ch,counts);
+    }
+}
 
 // ----------------------- Where the Physics Happens -----------------------
 

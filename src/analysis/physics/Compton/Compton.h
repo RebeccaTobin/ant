@@ -49,6 +49,8 @@ public:
     // For outputting stuff (like histograms)
     virtual void ShowResult() override;
 
+    void PlotCounts();
+
 
 // ------- Funtions specific to the Compton class -------
 
