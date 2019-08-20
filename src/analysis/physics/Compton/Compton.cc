@@ -147,7 +147,7 @@ Compton::Compton(const string& name, OptionsPtr opts) :
                                            mass_bins,
                                            angle_bins,
                                            taggerchannel_bins ,
-                                           "h3D_MM112011"
+                                           "h3D_MM112011_switch"
                                            );
 
 //  ---------------- Get Variables at Command Line ----------------
