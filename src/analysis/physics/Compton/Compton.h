@@ -16,6 +16,9 @@
 // To get stuff at the command line
 #include "base/Logger.h"
 
+// Scaler Counts
+#include "slowcontrol/SlowControlVariables.h"
+
 // A heirarchy of namespaces which generally resembles the
 // folder heirarchy
 namespace ant {
@@ -124,12 +127,15 @@ private:
     TH1D* h3D_MM112011_projX;
     TH1D* h3D_MM112011_switch_projX;
 
+    // Scalar Counter
+    TH1D* h_ScalarCounts;
+
     // Stuff for PR cut
     PromptRandom::Switch promptrandom;
     utils::TriggerSimulation triggersimu;
 
 
-// ---- Default values for options at the command line ----
+// ----- Default values for options at the command line -----
 
     // Incoming photon energy range cut
     double tagger_energy_low = 0;     // in MeV
@@ -138,7 +144,12 @@ private:
     // Prompt random windows
     std::string PR_windows = "-200,-6,-5,5,6,200";   // in ns
 
-// ------------------ Other Objects used ------------------
+// ----------------- Scalar Counter Objects -----------------
+
+    const std::shared_ptr<TaggerDetector_t> tagger;
+    unsigned nchannels = 0;
+
+// ------------------- Other Objects used -------------------
 
     const double proton_mass = ParticleTypeDatabase::Proton.Mass();
 

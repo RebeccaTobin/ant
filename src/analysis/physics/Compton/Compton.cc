@@ -11,13 +11,16 @@ using namespace ant::analysis::physics;
 
 // Defining the contructor for the Compton class
 Compton::Compton(const string& name, OptionsPtr opts) :
-    Physics(name, opts)
+    Physics(name, opts),
+    tagger(ExpConfig::Setup::GetDetector<TaggerDetector_t>()),
+    nchannels(tagger->GetNChannels())
 {
     // Bins used in histograms
     const BinSettings time_bins(2000, -200, 200);
     const BinSettings mass_bins(250, 800, 1300);
     const BinSettings angle_bins(8, 70, 150);
     const BinSettings taggerchannel_bins(328, 0, 328);
+    const BinSettings bins_tagger(nchannels);
 
 // ------------ Histograms Created Here but not Filled ------------
 
@@ -166,6 +169,9 @@ Compton::Compton(const string& name, OptionsPtr opts) :
                                          mass_bins,
                                          "h3D_MM112011_switch_projX"
                                          );
+
+//    h_ScalarCounts = HistFac.makeTH1D("Total Counts in Tagger",
+//                                      )
 
 //  ---------------- Get Variables at Command Line ----------------
 
@@ -794,9 +800,9 @@ void Compton::ProcessEvent(const TEvent& event, manager_t&)
 
 void Compton::ShowResult()
 {
-    h3D_MM111_projX = h3D_MM111->ProjectionX("Name");
-    h3D_MM112011_projX = h3D_MM112011->ProjectionX("Name");
-    h3D_MM112011_switch_projX = h3D_MM112011_switch->ProjectionX("Name");
+//    h3D_MM111_projX = h3D_MM111->ProjectionX("Name");
+//    h3D_MM112011_projX = h3D_MM112011->ProjectionX("Name");
+//    h3D_MM112011_switch_projX = h3D_MM112011_switch->ProjectionX("Name");
 
 //    ant::canvas(GetName()+": Tagger Time Plots")
 //            << h_WeightedTaggerTime
