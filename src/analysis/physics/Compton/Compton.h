@@ -49,10 +49,7 @@ public:
     // For outputting stuff (like histograms)
     virtual void ShowResult() override;
 
-    void PlotCounts();
-
-
-// ------- Funtions specific to the Compton class -------
+// ------- Methods specific to the Compton class -------
 
     // (explinations in cc file)
     bool IsParticleCharged(double veto_energy);
@@ -77,6 +74,10 @@ public:
                          const LorentzVec target,
                          const LorentzVec incoming,
                          const int IsChargedUncharged_output);
+
+// ------------------- Other Methods -------------------
+
+    void PlotCounts();
 
 private:
 

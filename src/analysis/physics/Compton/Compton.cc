@@ -471,6 +471,8 @@ bool Compton::IsOpeningAngle2(const TCandidateList& candidates,
     }
 }
 
+// ------------------------- Other Methods -------------------------
+
 void Compton::PlotCounts()
 {
     for ( auto ch = 0u ; ch < nchannels ; ++ch)
@@ -810,9 +812,17 @@ void Compton::ProcessEvent(const TEvent& event, manager_t&)
         }
     }
 
-    h3D_MM111_projX = h3D_MM111->ProjectionX("Name");
-    h3D_MM112011_projX = h3D_MM112011->ProjectionX("Name");
-    h3D_MM112011_switch_projX = h3D_MM112011_switch->ProjectionX("Name");
+    if(slowcontrol::Variables::TaggerScalers->HasChanged())
+    {
+        PlotCounts();
+    }
+
+    h3D_MM111_projX =
+            h3D_MM111->ProjectionX("Name",0,360,0,nchannels);
+    h3D_MM112011_projX =
+            h3D_MM112011->ProjectionX("Name",0,360,0,nchannels);
+    h3D_MM112011_switch_projX =
+            h3D_MM112011_switch->ProjectionX("Name",0,360,0,nchannels);
 }
 
 // ---------------------- Outputing the Histograms ----------------------
