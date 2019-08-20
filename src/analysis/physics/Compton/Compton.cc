@@ -60,6 +60,11 @@ Compton::Compton(const string& name, OptionsPtr opts) :
                                  taggerchannel_bins ,
                                  "h3D_MM111"
                                  );
+    h3D_MM111_projX = HistFac.makeTH1D("1 Particle, Uncharged",
+                                     "mass [MeV/c^2]","#",
+                                     mass_bins,
+                                     "h3D_MM111_projX"
+                                     );
 //    h_MM102 = HistFac.makeTH1D("2 Particles",
 //                                     "mass [MeV/c^2]","#",
 //                                     mass_bins,
@@ -133,6 +138,12 @@ Compton::Compton(const string& name, OptionsPtr opts) :
                                     taggerchannel_bins ,
                                     "h3D_MM112011"
                                     );
+    h3D_MM112011_projX = HistFac.makeTH1D("2 Particles, Open Ang < 15, "
+                                  "Coplanar, Uncharged",
+                                  "mass [MeV/c^2]","#",
+                                  mass_bins,
+                                  "h3D_MM112011_projX"
+                                     );
     h_MM112011_switch = HistFac.makeTH1D("2 Particles, One is Uncharged, "
                                          "Open Ang < 15, Coplanar",
                                          "mass [MeV/c^2]","#",
@@ -149,6 +160,12 @@ Compton::Compton(const string& name, OptionsPtr opts) :
                                            taggerchannel_bins ,
                                            "h3D_MM112011_switch"
                                            );
+    h3D_MM112011_switch_projX = HistFac.makeTH1D("2 Particles, One is Uncharged, "
+                                         "Open Ang < 15, Coplanar",
+                                         "mass [MeV/c^2]","#",
+                                         mass_bins,
+                                         "h3D_MM112011_switch_projX"
+                                         );
 
 //  ---------------- Get Variables at Command Line ----------------
 
